@@ -1,4 +1,3 @@
-module ExperimentsData
 
 abstract type AbstractMeasurement end
 abstract type AbstractProtocol end
@@ -77,6 +76,4 @@ mutable struct ExperimentData{M<:AbstractMeasurement, P<:AbstractProtocol, C<:Ab
   const protocol::P
   const condition::C
   weight::Float64
-end
-
 end
