@@ -17,6 +17,16 @@ export IsothermalCondition
 export ElectricalCondition
 export ThermoElectricalCondition
 
+export PlateGeometry
+
+export ExperimentData
+export MechanicalTest
+export ThermalTest
+export ThermoDielectricTest
+
 export evaluate_stress
 export evaluate_cv
+export evaluate_epsilon
 
+export experiment_prediction
+export loss
