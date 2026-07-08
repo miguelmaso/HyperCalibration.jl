@@ -78,10 +78,11 @@ struct CreepProtocol{K<:Kinematics} <: MechanicalProtocol{K}
 end
 
 """
-A sequence of temperatures.
+A sequence of temperatures at constant rate.
 """
 struct TemperatureSweepProtocol <: AbstractProtocol
   θ::Vector{Float64}
+  v::Float64
 end
 
 """
@@ -176,6 +177,10 @@ struct PlateGeometry <: AbstractGeometry
   A0::Float64
 end
 
+PlateGeometry() = PlateGeometry(0.0, 0.0)
+
+PlateGeometry(t0) = PlateGeometry(t0, 0.0)
+
 """
 Return the thickness for a given geometry.
 """
@@ -255,3 +260,13 @@ const UniaxialThermalRelaxationTest = ExperimentData{TensileMeasurement, Sequent
 Experiment data with constant rate uniaxial stretch-stress and coupled thermo-electrical conditions.
 """
 const UniaxialThermoElectricCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, ThermoElectricalCondition, PlateGeometry}
+
+"""
+Experiment data with temperature-specific heat capacity (DSC).
+"""
+const DifferentialScanningCalorimetryTest = ExperimentData{ThermalMeasurement, TemperatureSweepProtocol, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with frequency-dielectric permittivity (BDS).
+"""
+const DielectricSpectroscopyTest = ExperimentData{DielectricMeasurement, FrequencySweepProtocol, StandardCondition, PlateGeometry}

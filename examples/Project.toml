@@ -1,0 +1,5 @@
+[deps]
+HyperCalibration = "ee002675-c223-4b35-9440-54b3dbf2facf"
+Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
+OptimizationMetaheuristics = "3aafef2f-86ae-4776-b337-85a36adf0b55"
+OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
