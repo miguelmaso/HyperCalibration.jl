@@ -214,7 +214,7 @@ end
 """
 Experiment data with mechanical measurement (stress) and mechanical protocol (stretch).
 """
-MechanicalTest{C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{TensileMeasurement, MechanicalProtocol, C, G}
+MechanicalTest{P<:MechanicalProtocol, C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{TensileMeasurement, P, C, G}
 
 """
 An experiment data with thermal measurement (specific heat capacity) and thermal protocol (temperature).

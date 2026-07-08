@@ -1,23 +1,22 @@
 
 function F_volumetric(J::Real)
-  λ = J^(-1/3)
+  λ = J^(1/3)
   TensorValue(λ, 0, 0, 0, λ, 0, 0, 0, λ)
 end
 
-function J_thermal(::PhysicalModel, ::AbstractCondition)
+function J_thermal(::PhysicalModel, ::Float64)
   1.0
 end
 
-function J_thermal(m::ThermalVolumetric, c::AbstractCondition)
+function J_thermal(m::ThermalVolumetric, θ::Float64)
   _, ∂Ψ∂F, _, ∂∂Ψ∂FF, _, _ = m()
-  θ = temperature(c)
   pressure(J) = 1/3 * tr(∂Ψ∂F(F_volumetric(J), θ)) * J^(-2/3)
-  ∂pressure∂J(J) = 1/9 * tr(∂∂Ψ∂FF(F_volumetric(J), θ) * I3) * J^(-4/3) - 2/9 * tr(∂Ψ∂F(F_volumetric(J), θ)) * J^(-5/3)
+  ∂pressure∂J(J) = 1/9 * tr(∂∂Ψ∂FF(F_volumetric(J), θ) ⊙ I3) * J^(-4/3) - 2/9 * tr(∂Ψ∂F(F_volumetric(J), θ)) * J^(-5/3)
 
   J0 = 1.0
   p0 = pressure(J0)
 
-  tol = 1e-9
+  tol = abs(p0) * 1e-10
   maxiter = 20
 
   for _ in 1:maxiter
@@ -25,16 +24,15 @@ function J_thermal(m::ThermalVolumetric, c::AbstractCondition)
       return J0
     end
     dp = ∂pressure∂J(J0)
-    if dp == 0
-      break
-    end
     J0 -= p0 / dp
+    p0 = pressure(J0)
   end
+  @warn "Jacobian not converged after $(maxiter) iterations, with J=$(J0) and p=$(p0) at θ=$(θ)"
   J0
 end
 
-function calculate_F(m::PhysicalModel, c::AbstractCondition)
-  J = J_thermal(m, c)
+function calculate_F(m::PhysicalModel, θ::Float64)
+  J = J_thermal(m, θ)
   F_volumetric(J)
 end
 
