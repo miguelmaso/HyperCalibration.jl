@@ -5,7 +5,7 @@
 Evaluate the stress predicted by a constitutive model
 under the given mechanical protocol, conditions, and geometry of an experimental test.
 """
-function evaluate_stress(model::Elasto, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry)
+function evaluate_stress(model::Elasto, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry) where {K<:Kinematics}
   P_func = model()[2]
   map(stretches(protocol)) do λ
     F = calculate_F(model, K, λ, cond)
@@ -15,7 +15,7 @@ function evaluate_stress(model::Elasto, protocol::MechanicalProtocol{K}, cond::A
   end
 end
 
-function evaluate_stress(model::ThermoMechano{<:Any,<:Elasto}, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry)
+function evaluate_stress(model::ThermoMechano{<:Any,<:Elasto}, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry) where {K<:Kinematics}
   P_func = model()[2]
   θ = temperature(cond)
   map(stretches(protocol)) do λ
@@ -35,7 +35,7 @@ function new_state(model::ViscoElastic, F, Fn, A...)
   end
 end
 
-function evaluate_stress(model::ViscoElastic, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry)
+function evaluate_stress(model::ViscoElastic, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry) where {K<:Kinematics}
   update_time_step!(model, time_step(protocol))
   P_func = model()[2]
   n  = length(model.branches)
@@ -51,7 +51,7 @@ function evaluate_stress(model::ViscoElastic, protocol::MechanicalProtocol{K}, c
   end
 end
 
-function evaluate_stress(model::ThermoMechano{<:Any,<:ViscoElastic}, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry)
+function evaluate_stress(model::ThermoMechano{<:Any,<:ViscoElastic}, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry) where {K<:Kinematics}
   update_time_step!(model, time_step(protocol))
   θ = temperature(cond)
   P_func = model()[2]
@@ -70,7 +70,7 @@ end
 
 # --- Tensile tests: electro-mechanical material ---
 
-function evaluate_stress(model::ThermoElectroMechano{<:Any,<:Electro,<:ViscoElastic}, protocol::MechanicalProtocol{K}, cond::AbstractCondition, geom::AbstractGeometry)
+function evaluate_stress(model::ThermoElectroMechano{<:Any,<:Electro,<:ViscoElastic}, protocol::MechanicalProtocol{K}, cond::AbstractCondition, geom::AbstractGeometry) where {K<:Kinematics}
   update_time_step!(model, Δt)
   θ = temperature(cond)
   E0 = electric_field(cond, geom)

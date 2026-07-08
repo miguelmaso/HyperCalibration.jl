@@ -24,6 +24,14 @@ export MechanicalTest
 export ThermalTest
 export ThermoDielectricTest
 
+export UniaxialQuasiStaticTest
+export UniaxialCyclicLoadingTest
+export UniaxialRelaxationTest
+export UniaxialThermalQuasiStaticTest
+export UniaxialThermalCyclicLoadingTest
+export UniaxialThermalRelaxationTest
+export UniaxialThermoElectricCyclicLoadingTest
+
 export evaluate_stress
 export evaluate_cv
 export evaluate_epsilon

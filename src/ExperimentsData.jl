@@ -49,8 +49,8 @@ abstract type MechanicalProtocol{K<:Kinematics} <: AbstractProtocol end
 A sequential protocol defines a series of sub-protocols to be executed in order.
 E.g. a relaxation test is defined by a fast loading stage (CyclicLoadingProtocol) followed by a long holding stage (CreepProtocol).
 """
-struct SequentialProtocol <: AbstractProtocol
-  stages::Vector{AbstractProtocol}
+struct SequentialProtocol{K<:Kinematics} <: MechanicalProtocol{K}
+  stages::Vector{MechanicalProtocol{K}}
 end
 
 """
@@ -64,17 +64,17 @@ end
 A sequence of stretches at a constant rate and time step.
 """
 struct CyclicLoadingProtocol{K<:Kinematics} <: MechanicalProtocol{K}
+  λ::Vector{Float64}
   v::Float64
   Δt::Float64
-  λ::Vector{Float64}
 end
 
 """
 A sequence of times at a constant stretch.
 """
 struct CreepProtocol{K<:Kinematics} <: MechanicalProtocol{K}
-  λ::Float64
   t::Vector{Float64}
+  λ::Float64
 end
 
 """
@@ -202,11 +202,12 @@ mutable struct ExperimentData{M<:AbstractMeasurement, P<:AbstractProtocol, C<:Ab
   const protocol::P
   const condition::C
   const geometry::G
+  const id::Int
   weight::Float64
 end
 
 """
-An experiment data with mechanical measurement (stress) and mechanical protocol (stretch).
+Experiment data with mechanical measurement (stress) and mechanical protocol (stretch).
 """
 MechanicalTest{C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{TensileMeasurement, MechanicalProtocol, C, G}
 
@@ -219,3 +220,38 @@ ThermalTest{C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{ThermalM
 An experiment data with dielectric measurement (permittivity) and thermal protocol (temperature).
 """
 ThermoDielectricTest{C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{DielectricMeasurement, TemperatureSweepProtocol, C, G}
+
+"""
+Experiment data with uniaxial quasi-static stretch-stress and standard conditions.
+"""
+const UniaxialQuasiStaticTest = ExperimentData{TensileMeasurement, QuasiStaticProtocol{Uniaxial}, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with constant rate uniaxial stretch-stress and standard conditions.
+"""
+const UniaxialCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with uniaxial relaxation stressess and standard conditions.
+"""
+const UniaxialRelaxationTest = ExperimentData{TensileMeasurement, SequentialProtocol{Uniaxial}, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with uniaxial quasi-static stretch-stress and thermal conditions.
+"""
+const UniaxialThermalQuasiStaticTest = ExperimentData{TensileMeasurement, QuasiStaticProtocol{Uniaxial}, IsothermalCondition, PlateGeometry}
+
+"""
+Experiment data with constant rate uniaxial stretch-stress and thermal conditions.
+"""
+const UniaxialThermalCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, IsothermalCondition, PlateGeometry}
+
+"""
+Experiment data with uniaxial relaxation stressess and thermal conditions.
+"""
+const UniaxialThermalRelaxationTest = ExperimentData{TensileMeasurement, SequentialProtocol{Uniaxial}, IsothermalCondition, PlateGeometry}
+
+"""
+Experiment data with constant rate uniaxial stretch-stress and coupled thermo-electrical conditions.
+"""
+const UniaxialThermoElectricCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, ThermoElectricalCondition, PlateGeometry}

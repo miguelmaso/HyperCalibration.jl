@@ -4,9 +4,13 @@ version = "0.0.1"
 authors = ["Miguel Masó <miguel.maso@upc.edu>", "MultiSimOLab"]
 
 [deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Gridap = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
 HyperFEM = "ddbf423a-3df4-409e-9685-3dc416cae46c"
 
 [compat]
+CSV = "0.10.16"
+DataFrames = "1.8.2"
 Gridap = "0.19.11"
 HyperFEM = "0.0.3"
