@@ -27,8 +27,17 @@ function J_thermal(m::ThermalVolumetric, θ::Float64)
     J0 -= p0 / dp
     p0 = pressure(J0)
   end
-  @warn "Jacobian not converged after $(maxiter) iterations, with J=$(J0) and p=$(p0) at θ=$(θ)"
+  @debug "Jacobian not converged after $(maxiter) iterations, with J=$(J0) and p=$(p0) at θ=$(θ)"
   J0
+end
+
+function J_thermal(m::PhysicalModel, c::AbstractCondition)
+  1.0
+end
+
+function J_thermal(m::ThermoMechano, c::AbstractCondition)
+  θ = temperature(c)
+  J_thermal(m, θ)
 end
 
 function calculate_F(m::PhysicalModel, θ::Float64)

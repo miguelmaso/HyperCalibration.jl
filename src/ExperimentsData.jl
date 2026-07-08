@@ -95,7 +95,7 @@ end
 """
 Return the sequence of stretches for a given protocol.
 """
-stretches(::AbstractProtocol) = throw(ArgumentError("stretches not defined for this protocol"))
+stretches(::AbstractProtocol) = throw(ArgumentError("stretches not defined for this protocol."))
 
 stretches(p::SequentialProtocol) = vcat(map(stretches, p.stages)...)
 
@@ -106,7 +106,7 @@ stretches(p::CyclicLoadingProtocol) = p.λ
 """
 Return the constant time step for a given protocol.
 """
-time_step(::AbstractProtocol) = throw(ArgumentError("time_step not defined for this protocol"))
+time_step(::AbstractProtocol) = throw(ArgumentError("time_step not defined for this protocol."))
 
 time_step(p::CyclicLoadingProtocol) = p.Δt
 
@@ -115,7 +115,7 @@ time_step(p::CreepProtocol) = diff(p.t)[1]
 """
 Return the sequence of temperatures for a given protocol.
 """
-temperatures(::AbstractProtocol) = throw(ArgumentError("temperatures not defined for this protocol"))
+temperatures(::AbstractProtocol) = throw(ArgumentError("temperatures not defined for this protocol."))
 
 temperatures(p::TemperatureSweepProtocol) = p.θ
 
@@ -152,7 +152,7 @@ end
 """
 Return the room temperature for a given condition.
 """
-temperature(::AbstractCondition) = 293.15
+temperature(::AbstractCondition) = throw(ArgumentError("temperature not defined for this condition."))
 
 temperature(c::IsothermalCondition) = c.θ
 
@@ -161,7 +161,7 @@ temperature(c::ThermoElectricalCondition) = c.θ
 """
 Return the applied voltage for a given condition.
 """
-voltage(::AbstractCondition) = 0.0
+voltage(::AbstractCondition) = throw(ArgumentError("voltage not defined for this condition."))
 
 voltage(c::ElectricalCondition) = c.V
 
