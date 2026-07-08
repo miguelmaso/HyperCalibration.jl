@@ -1,6 +1,10 @@
 
 # --- Tensile tests: elastic material ---
 
+"""
+Evaluate the stress predicted by a constitutive model
+under the given mechanical protocol, conditions, and geometry of an experimental test.
+"""
 function evaluate_stress(model::Elasto, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry)
   P_func = model()[2]
   map(stretches(protocol)) do λ
@@ -128,6 +132,10 @@ end
 
 # --- Thermal tests ---
 
+"""
+Evaluate the specific heat capacity predicted by a constitutive model
+under the given thermal protocol, conditions and geometry of an experimental test.
+"""
 function evaluate_cv(model::ThermoMechano, protocol::TemperatureSweepProtocol, ::AbstractCondition, ::AbstractGeometry)
   J(θ) = J_temp(model, θ)
   ∂∂Ψ = model()[5]
@@ -143,6 +151,10 @@ end
 
 # --- Dielectric tests ---
 
+"""
+Evaluate the dielectric permittivity predicted by a constitutive model
+under the given thermal protocol, conditions and geometry of an experimental test.
+"""
 function evaluate_epsilon(model::ThermoElectro, protocol::TemperatureSweepProtocol, ::AbstractCondition, ::AbstractGeometry)
   ∂∂Ψ∂EE = model()[6]
   F1 = F_volumetric(1.0)
