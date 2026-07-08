@@ -11,6 +11,8 @@ export CyclicLoadingProtocol
 export CreepProtocol
 export TemperatureSweepProtocol
 export FrequencySweepProtocol
+export stretches
+export temperatures
 
 export StandardCondition
 export IsothermalCondition

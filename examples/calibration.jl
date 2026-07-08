@@ -2,6 +2,7 @@ using Revise
 using HyperCalibration
 using HyperFEM
 using Optimization, OptimizationOptimJL, OptimizationMetaheuristics
+using Plots
 
 
 ## Laboratory constants
@@ -32,10 +33,11 @@ ub = [1.0e8,  1.0, 1.0e10]  # Maximum search limits
 
 opt_func = OptimizationFunction((p, d) -> loss(build_heat, p, d))
 opt_prob = OptimizationProblem(opt_func, p0, set_1_cal, lb=lb, ub=ub)
-opt_heat = solve(opt_prob, ParticleSwarm(lower=lb, upper=ub, n_particles=100), maxiters=1000, maxtime=60)
+opt_heat = solve(opt_prob, ParticleSwarm(lower=lb, upper=ub, n_particles=100), maxiters=1000, maxtime=30)
 sol_heat = opt_heat.u
 
-# model = build_heat(sol_heat...)
+model = build_heat(sol_heat...)
+plot(model, set_1_cal[1])
 # r2 = stats(build_heat, sol_heat, set_1_cal, pn)
 # text_r2 = text(@sprintf("R² = %.0f %%", 100*r2), 12, :left)
 
@@ -67,7 +69,7 @@ ub = [2.0e5,  2.0e3,  2.0e2]  # Maximum search limits
 
 opt_func = OptimizationFunction((p,d) -> loss(build_longterm, p, d))
 opt_prob_ps = OptimizationProblem(opt_func, p0, set_2_quasi, lb=lb, ub=ub)
-opt_long_ps = solve(opt_prob_ps, ParticleSwarm(lower=lb, upper=ub, n_particles=1000), maxiters=1000, maxtime=60)
+opt_long_ps = solve(opt_prob_ps, ParticleSwarm(lower=lb, upper=ub, n_particles=1000), maxiters=1000, maxtime=30)
 opt_prob_nm = OptimizationProblem(opt_func, opt_long_ps.u, set_2_quasi)
 opt_long_nm = solve(opt_prob_nm, NelderMead(), maxiters=100, maxtime=30)
 sol_long = opt_long_nm.u
