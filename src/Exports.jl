@@ -15,11 +15,16 @@ export stretches
 export temperatures
 export frequencies
 export independent_variable
+export time_step
+export rate
+export max_stretch
 
 export StandardCondition
 export IsothermalCondition
 export ElectricalCondition
 export ThermoElectricalCondition
+export temperature
+export voltage
 
 export PlateGeometry
 
@@ -27,6 +32,7 @@ export ExperimentData
 export MechanicalTest
 export ThermalTest
 export ThermoDielectricTest
+export pretty_label
 
 export UniaxialQuasiStaticTest
 export UniaxialCyclicLoadingTest

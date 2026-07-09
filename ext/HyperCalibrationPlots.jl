@@ -34,7 +34,7 @@ end
 
   scale = pop!(plotattributes, :units_scale, 1.0)
 
-  x_data = independent_variable(data.protocol)
+  x_data = independent_variable(data)
   y_true, y_pred = experiment_prediction(model, data) .* scale
 
   user_label = get(plotattributes, :label, nothing)
@@ -45,7 +45,7 @@ end
 
   # 1. Prediction line
   @series begin
-    seriestype := :line
+    seriestype := :path
     x_data, y_pred
   end
 

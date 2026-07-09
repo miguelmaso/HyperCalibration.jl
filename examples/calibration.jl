@@ -80,3 +80,32 @@ plot(model, set_2_quasi, label=["800%" "500%" "200%"], xlabel="Stretch [-]", yla
 # r2 = stats(build_longterm, sol_long, set_2_quasi, pn)
 
 
+## Step 3: Viscoelastic characterization
+
+build_branch(μ, t) = ViscousIncompressible(IsochoricNeoHookean3D(μ=μ), τ=exp10(t))
+build_branches(p...) = map(splat(build_branch), Iterators.partition(p,2))
+build_visco(p...) = GeneralizedMaxwell(build_longterm(sol_long...), build_branches(p...)...)
+n_branches = 2
+pn = reduce(vcat, ["μ$i", "t$i"] for i in 1:n_branches)  # Parameter names
+p0 = reduce(vcat, [  1e4,   1.0] for _ in 1:n_branches)  # Initial seed
+lb = reduce(vcat, [  1e3,  -1.0] for _ in 1:n_branches)  # Lower search limits
+ub = reduce(vcat, [  1e5,   4.0] for _ in 1:n_branches)  # Upper search limits
+
+set_4_load_ref = filter(r -> temperature(r) ≈ θr, set_4_load)
+
+opt_func = OptimizationFunction((p,d) -> loss(build_visco, p, d))
+opt_prob_ps  = OptimizationProblem(opt_func, p0, set_4_load_ref, lb=lb, ub=ub)
+opt_visco_ps = solve(opt_prob_ps, ParticleSwarm(lower=lb, upper=ub, n_particles=500), maxiters=1000, maxtime=60)
+opt_prob_nm  = OptimizationProblem(opt_func, opt_visco_ps.u, set_4_load_ref)
+opt_visco_nm = solve(opt_prob_nm, Optim.NelderMead(), maxiters=100, maxtime=30)
+sol_visco = opt_visco_nm.u
+
+model = build_visco(sol_visco...)
+subset1 = filter(r -> rate(r) ≈ 0.1, set_4_load_ref)
+p1 = plot(model, subset1, xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
+display(p1);
+
+subset2 = filter(r -> isapprox(max_stretch(r), 4.0, atol=0.1), set_4_load_ref)
+p2 = plot(model, subset2, xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
+display(p2);
+

@@ -4,6 +4,7 @@ abstract type AbstractProtocol end
 abstract type AbstractCondition end
 abstract type AbstractGeometry end
 
+
 # --- Kinematics ---
 
 abstract type Kinematics end
@@ -17,6 +18,7 @@ struct Uniaxial <: Kinematics end
 Biaxial kinematics allow to evaluate the stress response at one Gauss point.
 """
 struct Biaxial <: Kinematics end
+
 
 # --- Measurements ---
 
@@ -40,6 +42,7 @@ The dielectric parmittivity recoded during a dielectric test.
 struct DielectricMeasurement <: AbstractMeasurement
   ε::Vector{Float64}
 end
+
 
 # --- Protocols ---
 
@@ -104,15 +107,6 @@ stretches(p::QuasiStaticProtocol) = p.λ
 stretches(p::CyclicLoadingProtocol) = p.λ
 
 """
-Return the constant time step for a given protocol.
-"""
-time_step(::AbstractProtocol) = throw(ArgumentError("time_step not defined for this protocol."))
-
-time_step(p::CyclicLoadingProtocol) = p.Δt
-
-time_step(p::CreepProtocol) = diff(p.t)[1]
-
-"""
 Return the sequence of temperatures for a given protocol.
 """
 temperatures(::AbstractProtocol) = throw(ArgumentError("temperatures not defined for this protocol."))
@@ -136,6 +130,32 @@ independent_variable(p::MechanicalProtocol) = stretches(p)
 independent_variable(p::TemperatureSweepProtocol) = temperatures(p)
 
 independent_variable(p::FrequencySweepProtocol) = frequencies(p)
+
+"""
+Return the constant time step for a given protocol.
+"""
+time_step(::AbstractProtocol) = throw(ArgumentError("time_step not defined for this protocol."))
+
+time_step(p::CyclicLoadingProtocol) = p.Δt
+
+time_step(p::CreepProtocol) = diff(p.t)[1]
+
+"""
+Return the rate of independent variable increment for a given protocol.
+"""
+rate(::AbstractProtocol) = throw(ArgumentError("rate not defined for this protocol."))
+
+rate(p::CyclicLoadingProtocol) = p.v
+
+rate(p::TemperatureSweepProtocol) = p.v
+
+"""
+Return the maximum stretch for a givben protocol.
+"""
+max_stretch(::AbstractProtocol) = throw(ArgumentError("max_stretch not defined for this protocol."))
+
+max_stretch(p::MechanicalProtocol) = maximum(stretches(p))
+
 
 # --- Conditions ---
 
@@ -185,6 +205,7 @@ voltage(c::ElectricalCondition) = c.V
 
 voltage(c::ThermoElectricalCondition) = c.V
 
+
 # --- Geometries ---
 
 """
@@ -210,6 +231,7 @@ thickness(g::PlateGeometry) = g.t0
 Return the electric field for a given condition and geometry.
 """
 electric_field(::AbstractCondition, ::AbstractGeometry) = voltage(c) / thickness(g)
+
 
 # --- Experiments ---
 
@@ -288,3 +310,30 @@ const DifferentialScanningCalorimetryTest = ExperimentData{ThermalMeasurement, T
 Experiment data with frequency-dielectric permittivity (BDS).
 """
 const DielectricSpectroscopyTest = ExperimentData{DielectricMeasurement, FrequencySweepProtocol, StandardCondition, PlateGeometry}
+
+
+# --- Experiment getters ---
+
+stretches(d::ExperimentData)            = stretches(d.protocol)
+temperatures(d::ExperimentData)         = temperatures(d.protocol)
+frequencies(d::ExperimentData)          = frequencies(d.protocol)
+independent_variable(d::ExperimentData) = independent_variable(d.protocol)
+time_step(d::ExperimentData)            = time_step(d.protocol)
+rate(d::ExperimentData)                 = rate(d.protocol)
+max_stretch(d::ExperimentData)          = max_stretch(d.protocol)
+
+temperature(d::ExperimentData) = temperature(d.condition)
+voltage(d::ExperimentData)     = voltage(d.condition)
+
+thickness(d::ExperimentData)      = thickness(d.geometry)
+electric_field(d::ExperimentData) = electric_field(d.condition, d.geometry)
+
+
+# --- Experiment labels ---
+
+pretty_label(f::Function, v)            = string(f(v))
+pretty_label(f::typeof(rate), v)        = @sprintf("%.2f/s", f(v))
+pretty_label(f::typeof(max_stretch), v) = @sprintf("%3.0f%%", 100*(f(v)-1))
+pretty_label(f::typeof(temperature), v) = @sprintf("%2.0fºC", f(v)-273.15)
+pretty_label(f::typeof(voltage), v)     = @sprintf("%4dV", f(v))
+pretty_label(fs::Tuple{Function...}, v) = join(map(f -> pretty_label(f, v), fs), ", ")
