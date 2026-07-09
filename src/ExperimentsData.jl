@@ -322,11 +322,11 @@ time_step(d::ExperimentData)            = time_step(d.protocol)
 rate(d::ExperimentData)                 = rate(d.protocol)
 max_stretch(d::ExperimentData)          = max_stretch(d.protocol)
 
-temperature(d::ExperimentData) = temperature(d.condition)
-voltage(d::ExperimentData)     = voltage(d.condition)
+temperature(d::ExperimentData)          = temperature(d.condition)
+voltage(d::ExperimentData)              = voltage(d.condition)
 
-thickness(d::ExperimentData)      = thickness(d.geometry)
-electric_field(d::ExperimentData) = electric_field(d.condition, d.geometry)
+thickness(d::ExperimentData)            = thickness(d.geometry)
+electric_field(d::ExperimentData)       = electric_field(d.condition, d.geometry)
 
 
 # --- Experiment labels ---
@@ -336,4 +336,4 @@ pretty_label(f::typeof(rate), v)        = @sprintf("%.2f/s", f(v))
 pretty_label(f::typeof(max_stretch), v) = @sprintf("%3.0f%%", 100*(f(v)-1))
 pretty_label(f::typeof(temperature), v) = @sprintf("%2.0fºC", f(v)-273.15)
 pretty_label(f::typeof(voltage), v)     = @sprintf("%4dV", f(v))
-pretty_label(fs::Tuple{Function...}, v) = join(map(f -> pretty_label(f, v), fs), ", ")
+pretty_label(fs::Tuple{Vararg{Function}}, v) = join(map(f -> pretty_label(f, v), fs), ", ")

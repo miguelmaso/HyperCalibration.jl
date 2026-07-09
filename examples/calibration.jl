@@ -101,11 +101,13 @@ opt_visco_nm = solve(opt_prob_nm, Optim.NelderMead(), maxiters=100, maxtime=30)
 sol_visco = opt_visco_nm.u
 
 model = build_visco(sol_visco...)
-subset1 = filter(r -> rate(r) ≈ 0.1, set_4_load_ref)
-p1 = plot(model, subset1, xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
+subset_1 = filter(r -> rate(r) ≈ 0.1, set_4_load_ref)
+labels_1 = map(r -> pretty_label(max_stretch, r), subset_1)
+p1 = plot(model, subset_1, xlabel="Stretch [-]", ylabel="Stress [KPa]", label=labels_1, units_scale=1e-3)
 display(p1);
 
-subset2 = filter(r -> isapprox(max_stretch(r), 4.0, atol=0.1), set_4_load_ref)
-p2 = plot(model, subset2, xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
+subset_2 = filter(r -> isapprox(max_stretch(r), 4.0, atol=0.1), set_4_load_ref)
+labels_2 = map(r -> pretty_label(rate, r), subset_2)
+p2 = plot(model, subset_2, xlabel="Stretch [-]", ylabel="Stress [KPa]", label=labels_2, units_scale=1e-3)
 display(p2);
 
