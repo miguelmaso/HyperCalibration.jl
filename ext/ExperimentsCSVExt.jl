@@ -4,74 +4,72 @@ using HyperCalibration
 using CSV
 
 
-function CSV.read(filepath::String, experiment_type::Type{<:ExperimentData}; thickness=0.0, kwargs...)
-
+function CSV.read(filepath::String, ::Type{T}; thickness=0.0, kwargs...) where {T <: ExperimentData}
   data = CSV.File(filepath; kwargs...)
 
-  # We use get! to initialize an empty Int array for new IDs, then push! the row index
+  # Group row indices by id. We use get! to initialize an empty Int array for new IDs, then push! the row index
   grouped_indices = Dict{eltype(data.id), Vector{Int}}()
   for (i, id) in enumerate(data.id)
       push!(get!(grouped_indices, id, Int[]), i)
   end
 
-  experiments = []
-  for (id, idxs) in pairs(grouped_indices)
+  return [build_experiment(T, data, id, indices, thickness) for (id, indices) in pairs(grouped_indices)]
+end
 
-    if experiment_type === UniaxialQuasiStaticTest
-      λ = @view data.stretch[idxs]
-      σ = @view data.stress[idxs]
 
-      push!(experiments, UniaxialQuasiStaticTest(id, λ, σ))
+function build_experiment(::Type{T}, data, id, indices, thickness) where {T}
+  error("No build_experiment method defined for type $T")
+end
 
-    elseif experiment_type === UniaxialCyclicLoadingTest
-      vel = data.vel[idxs[1]]
-      λ = @view data.stretch[idxs]
-      σ = @view data.stress[idxs]
+function build_experiment(::Type{UniaxialQuasiStaticTest}, data, id, indices, thickness)
+  λ = @view data.stretch[indices]
+  σ = @view data.stress[indices]
+  UniaxialQuasiStaticTest(id, λ, σ)
+end
 
-      push!(experiments, UniaxialCyclicLoadingTest(id, λ, vel, σ))
+function build_experiment(::Type{UniaxialCyclicLoadingTest}, data, id, indices, thickness)
+  vel = data.vel[indices[1]]
+  λ = @view data.stretch[indices]
+  σ = @view data.stress[indices]
+  UniaxialCyclicLoadingTest(id, λ, vel, σ)
+end
 
-    elseif experiment_type === UniaxialThermalQuasiStaticTest
-      θ = data.temp[idxs[1]]
-      λ = @view data.stretch[idxs]
-      σ = @view data.stress[idxs]
+function build_experiment(::Type{UniaxialThermalQuasiStaticTest}, data, id, indices, thickness)
+  θ = data.temp[indices[1]]
+  λ = @view data.stretch[indices]
+  σ = @view data.stress[indices]
+  UniaxialThermalQuasiStaticTest(id, λ, σ, θ)
+end
 
-      push!(experiments, UniaxialThermalQuasiStaticTest(id, λ, σ, θ))
+function build_experiment(::Type{UniaxialThermalCyclicLoadingTest}, data, id, indices, thickness)
+  vel = data.vel[indices[1]]
+  θ = data.temp[indices[1]]
+  λ = @view data.stretch[indices]
+  σ = @view data.stress[indices]
+  UniaxialThermalCyclicLoadingTest(id, λ, vel, σ, θ)
+end
 
-    elseif experiment_type === UniaxialThermalCyclicLoadingTest
-      vel = data.vel[idxs[1]]
-      θ = data.temp[idxs[1]]
-      λ = @view data.stretch[idxs]
-      σ = @view data.stress[idxs]
+function build_experiment(::Type{UniaxialThermoElectricCyclicLoadingTest}, data, id, indices, thickness)
+  vel = data.vel[indices[1]]
+  θ = data.temp[indices[1]]
+  V = data.voltage[indices[1]]
+  λ = @view data.stretch[indices]
+  σ = @view data.stress[indices]
+  UniaxialThermoElectricCyclicLoadingTest(id, λ, vel, σ, θ, V, thickness)
+end
 
-      push!(experiments, UniaxialThermalCyclicLoadingTest(id, λ, vel, σ, θ))
+function build_experiment(::Type{DifferentialScanningCalorimetryTest}, data, id, indices, thickness)
+  rate = data.rate[indices[1]]
+  θ  = @view data.temp[indices]
+  cv = @view data.cv[indices]
+  DifferentialScanningCalorimetryTest(id, θ, rate, cv)
+end
 
-    elseif experiment_type === UniaxialThermoElectricCyclicLoadingTest
-      vel = data.vel[idxs[1]]
-      θ = data.temp[idxs[1]]
-      V = data.voltage[idxs[1]]
-      λ = @view data.stretch[idxs]
-      σ = @view data.stress[idxs]
-
-      push!(experiments, UniaxialThermoElectricCyclicLoadingTest(id, λ, vel, σ, θ, V, thickness))
-
-    elseif experiment_type === DifferentialScanningCalorimetryTest
-      rate = data.rate[idxs[1]]
-      θ  = @view data.temp[idxs]
-      cv = @view data.cv[idxs]
-
-      push!(experiments, DifferentialScanningCalorimetryTest(id, θ, rate, cv))
-
-    elseif experiment_type === DifferentialScanningCalorimetryTest
-      θ = data.temp[idxs[1]]
-      f = @view data.freq[idxs]
-      ε = @view data.dielec[idxs]
-
-      push!(experiments, DifferentialScanningCalorimetryTest(id, f, ε, θ))
-
-    end
-  end
-  
-  return experiments
+function build_experiment(::Type{DielectricSpectroscopyTest}, data, id, indices, thickness)
+  θ = data.temp[indices[1]]
+  f = @view data.freq[indices]
+  ε = @view data.dielec[indices]
+  DielectricSpectroscopyTest(id, f, ε, θ)
 end
 
 end
