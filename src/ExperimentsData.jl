@@ -331,9 +331,13 @@ electric_field(d::ExperimentData)       = electric_field(d.condition, d.geometry
 
 # --- Experiment labels ---
 
-pretty_label(f::Function, v)            = string(f(v))
-pretty_label(f::typeof(rate), v)        = @sprintf("%.2f/s", f(v))
-pretty_label(f::typeof(max_stretch), v) = @sprintf("%3.0f%%", 100*(f(v)-1))
-pretty_label(f::typeof(temperature), v) = @sprintf("%2.0fºC", f(v)-273.15)
-pretty_label(f::typeof(voltage), v)     = @sprintf("%4dV", f(v))
-pretty_label(fs::Tuple{Vararg{Function}}, v) = join(map(f -> pretty_label(f, v), fs), ", ")
+pretty_label(f::Function, d)            = string(f(d))
+pretty_label(f::typeof(rate), d)        = @sprintf("%.2f ", f(d)) * rate_units(d)
+pretty_label(f::typeof(max_stretch), d) = @sprintf("%3.0f %%", 100*(f(d)-1))
+pretty_label(f::typeof(temperature), d) = @sprintf("%2.0f ºC", f(d)-273.15)
+pretty_label(f::typeof(voltage), d)     = @sprintf("%4d V", f(d))
+pretty_label(fs::Tuple{Vararg{Function}}, d) = join(map(f -> pretty_label(f, d), fs), ", ")
+
+rate_units(d::ExperimentData) = rate_units(d.protocol)
+rate_units(::TemperatureSweepProtocol) = "K/min"
+rate_units(::MechanicalProtocol) = "/s"

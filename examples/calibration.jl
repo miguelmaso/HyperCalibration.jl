@@ -76,7 +76,7 @@ opt_long_nm = solve(opt_prob_nm, NelderMead(), maxiters=100, maxtime=30)
 sol_long = opt_long_nm.u
 
 model = build_longterm(sol_long...)
-plot(model, set_2_quasi, label=["800%" "500%" "200%"], xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
+plot(model, set_2_quasi[1], label=["Prediction" "Experiment"], xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
 
 # r2 = stats(build_longterm, sol_long, set_2_quasi, pn)
 
