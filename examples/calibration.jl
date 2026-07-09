@@ -4,6 +4,10 @@ using HyperFEM
 using Optimization, OptimizationOptimJL, OptimizationMetaheuristics
 using Plots
 
+default(linewidth = 2)
+default(mswidth = 0)
+default(mscolor = :transparent)
+
 
 ## Laboratory constants
 θr = 293.15    # Reference temperature, ºK
@@ -71,14 +75,8 @@ opt_long_nm = solve(opt_prob_nm, NelderMead(), maxiters=100, maxtime=30)
 sol_long = opt_long_nm.u
 
 model = build_longterm(sol_long...)
-plot(model, set_2_quasi[1])
+plot(model, set_2_quasi, label=["800%" "500%" "200%"], xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
 
 # r2 = stats(build_longterm, sol_long, set_2_quasi, pn)
-# text_par = text(join(map((n,v) -> @sprintf("%s=%.2g",n,v), pn, sol_long), "\n"), 12, :left)
-# text_r2 = text(@sprintf("R² = %.1f %%", 100*r2), 12, :left)
 
-# p = plot(xlabel="Stretch [-]", ylabel="Stress [KPa]")
-# plot_experiment!(model, getfirst(r -> r.θ ≈ θr, set_2_quasi))
-# annotate!((0.05, 0.8), text_r2, relative=true)
-# display(p);
 
