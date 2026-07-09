@@ -2,44 +2,31 @@ module HyperCalibrationPlots
 
 using HyperCalibration
 using HyperFEM
-using RecipesBase  # Provided by Plots
+using Plots.RecipesBase
 
-import HyperFEM.PhysicalModels: PhysicalModel
+import HyperFEM.PhysicalModels: PhysicalModel  # FIXME: This import must be removed after the HyperFEM 0.0.4 release
 
-# global COLOR_INDEX = 1
+@recipe function f(model::PhysicalModel, data::ExperimentData)
 
-# function Plots.plot(model::PhysicalModel, data::ExperimentData; kwargs...)
-#   p = plot()
-#   plot!(model, data; kwargs...)
-#   p
-# end
-
-# function Plots.plot!(model::PhysicalModel, data::DifferentialScanningCalorimetryTest; kwargs...)
-#   get!(kwargs, :color, COLOR_INDEX)
-#   x_data = temperatures(data.protocol)
-#   y_true, y_pred = experiment_prediction(model, data)
-#   p = plot!(x_data, y_pred; kwargs...)
-#   p = scatter!(x_data, y_true; kwargs...)
-#   global COLOR_INDEX += 1
-#   p
-# end
-
-@recipe function f(model::PhysicalModel, data::DifferentialScanningCalorimetryTest)
-    
-  x_data = temperatures(data.protocol)
+  x_data = independent_variable(data.protocol)
   y_true, y_pred = experiment_prediction(model, data)
-  
-  # 1. Plot the Prediction Line
+
+  user_label = get(plotattributes, :label, nothing)
+  user_color = get(plotattributes, :seriescolor, nothing)
+
+  split_series = (user_label isa AbstractArray && length(user_label) > 1) || 
+                 (user_color isa AbstractArray && length(user_color) > 1)
+
+  # 1. Prediction line
   @series begin
     seriestype := :line
-    label --> "Prediction"
     x_data, y_pred
   end
 
-  # 2. Plot the Experimental Data Scatter. Plots naturally groups the two series under the same color cycle index.
+  # 2. Experimental data scatter.
   @series begin
     seriestype := :scatter
-    label --> "Experimental True"
+    primary    := split_series
     x_data, y_true
   end
 end

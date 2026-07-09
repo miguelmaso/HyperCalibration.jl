@@ -119,6 +119,24 @@ temperatures(::AbstractProtocol) = throw(ArgumentError("temperatures not defined
 
 temperatures(p::TemperatureSweepProtocol) = p.θ
 
+"""
+Return the sequence of frequencies for a given protocol.
+"""
+frequencies(::AbstractProtocol) = throw(ArgumentError("frequencies not defined for this protocol."))
+
+frequencies(p::FrequencySweepProtocol) = p.f
+
+"""
+Return the sequence of the independent variable for a given protocol.
+"""
+independent_variable(::AbstractProtocol) = throw(ArgumentError("independent_variable not implemented for this protocol."))
+
+independent_variable(p::MechanicalProtocol) = stretches(p)
+
+independent_variable(p::TemperatureSweepProtocol) = temperatures(p)
+
+independent_variable(p::FrequencySweepProtocol) = frequencies(p)
+
 # --- Conditions ---
 
 """

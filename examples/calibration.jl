@@ -37,14 +37,10 @@ opt_heat = solve(opt_prob, ParticleSwarm(lower=lb, upper=ub, n_particles=100), m
 sol_heat = opt_heat.u
 
 model = build_heat(sol_heat...)
-plot(model, set_1_cal[1])
-# r2 = stats(build_heat, sol_heat, set_1_cal, pn)
-# text_r2 = text(@sprintf("R² = %.0f %%", 100*r2), 12, :left)
+plot(model, set_1_cal[1], label=["Prediction" "Experiment"], xlabel="T [ºC]", ylabel="cv [J/m³·ºK]")
 
-# p = plot(xlabel="T [ºC]", ylabel="cv [J/m³·ºK]")
-# plot_experiment!(model, set_1_cal[1])
-# annotate!((0.05, 0.8), text_r2, relative=true)
-# display(p);
+
+# r2 = stats(build_heat, sol_heat, set_1_cal, pn)
 
 
 ## Step 2: Hyperelastic characterization
@@ -74,7 +70,9 @@ opt_prob_nm = OptimizationProblem(opt_func, opt_long_ps.u, set_2_quasi)
 opt_long_nm = solve(opt_prob_nm, NelderMead(), maxiters=100, maxtime=30)
 sol_long = opt_long_nm.u
 
-# model = build_longterm(sol_long...)
+model = build_longterm(sol_long...)
+plot(model, set_2_quasi[1])
+
 # r2 = stats(build_longterm, sol_long, set_2_quasi, pn)
 # text_par = text(join(map((n,v) -> @sprintf("%s=%.2g",n,v), pn, sol_long), "\n"), 12, :left)
 # text_r2 = text(@sprintf("R² = %.1f %%", 100*r2), 12, :left)

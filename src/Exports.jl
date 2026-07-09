@@ -13,6 +13,8 @@ export TemperatureSweepProtocol
 export FrequencySweepProtocol
 export stretches
 export temperatures
+export frequencies
+export independent_variable
 
 export StandardCondition
 export IsothermalCondition
