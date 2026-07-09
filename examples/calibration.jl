@@ -3,6 +3,7 @@ using HyperCalibration
 using HyperFEM
 using Optimization, OptimizationOptimJL, OptimizationMetaheuristics
 using Plots
+using CSV
 
 default(linewidth = 2)
 default(mswidth = 0)
@@ -18,12 +19,12 @@ t0 = 0.0005    # Specimen thickness, m (0.5mm)
 
 ## Load data
 
-set_1_cal   = load_data(abspath(dirname(@__FILE__), "data/set 1 calorimetry.csv"), DifferentialScanningCalorimetryTest, decimal=',')
-set_2_quasi = load_data(abspath(dirname(@__FILE__), "data/set 2 quasi-static.csv"), UniaxialQuasiStaticTest, decimal=',')
-# set_3_creep = load_data(abspath(dirname(@__FILE__), "data/set 3 creep.csv"), UniaxialRelaxationTest, decimal=',')
-set_4_load  = load_data(abspath(dirname(@__FILE__), "data/set 4 loading.csv"), UniaxialThermalCyclicLoadingTest, decimal=',')
-set_5_elec  = load_data(abspath(dirname(@__FILE__), "data/set 5 dielectric.csv"), DielectricSpectroscopyTest, decimal=',')
-set_6_coupl = load_data(abspath(dirname(@__FILE__), "data/set 6 coupled.csv"), UniaxialThermoElectricCyclicLoadingTest, decimal=',', thickness=t0)
+set_1_cal   = CSV.read(abspath(dirname(@__FILE__), "data/set 1 calorimetry.csv"), DifferentialScanningCalorimetryTest, decimal=',')
+set_2_quasi = CSV.read(abspath(dirname(@__FILE__), "data/set 2 quasi-static.csv"), UniaxialQuasiStaticTest, decimal=',')
+# set_3_creep = CSV.read(abspath(dirname(@__FILE__), "data/set 3 creep.csv"), UniaxialRelaxationTest, decimal=',')
+set_4_load  = CSV.read(abspath(dirname(@__FILE__), "data/set 4 loading.csv"), UniaxialThermalCyclicLoadingTest, decimal=',')
+set_5_elec  = CSV.read(abspath(dirname(@__FILE__), "data/set 5 dielectric.csv"), DielectricSpectroscopyTest, decimal=',')
+set_6_coupl = CSV.read(abspath(dirname(@__FILE__), "data/set 6 coupled.csv"), UniaxialThermoElectricCyclicLoadingTest, decimal=',', thickness=t0)
 
 
 ## Step 1: Thermal characterization
