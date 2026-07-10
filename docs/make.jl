@@ -20,6 +20,6 @@ makedocs(
 )
 
 deploydocs(
-  repo = "github.com/MultiSimOLab/HyperFEM.jl.git",
+  repo = "github.com/miguelmaso/HyperCalibration.jl.git",
   devbranch = "main"
 )
