@@ -1,8 +1,14 @@
+using Aqua
 using Test
 using HyperCalibration
 using HyperFEM
 
 @testset "HyperCalibration" begin
+
+  @testset "code quality (Aqua.jl)" begin
+    Aqua.test_all(HyperCalibration)
+  end
+
   @testset "experiment data contracts" begin
     @test TensileMeasurement([1, 2]).σ == [1.0, 2.0]
     @test QuasiStaticProtocol{Uniaxial}([1, 2]).λ == [1.0, 2.0]

@@ -43,7 +43,6 @@ export UniaxialThermalRelaxationTest
 export UniaxialThermoElectricCyclicLoadingTest
 export DifferentialScanningCalorimetryTest
 export DielectricSpectroscopyTest
-export load_data
 
 export evaluate_stress
 export evaluate_cv
