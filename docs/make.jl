@@ -11,10 +11,15 @@ using HyperCalibration
 cp(joinpath(@__DIR__, "..", "README.md"), joinpath(@__DIR__, "src", "index.md"), force=true)
 
 makedocs(
-  modules=[HyperCalibration],
   sitename="HyperCalibration.jl",
+  modules=[HyperCalibration],
   pages=[
     "Home" => "index.md",
     "API reference" => "api.md",
   ],
+)
+
+deploydocs(
+  repo = "github.com/MultiSimOLab/HyperFEM.jl.git",
+  devbranch = "main"
 )
