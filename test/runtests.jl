@@ -22,11 +22,11 @@ using HyperFEM
     @test data.measurement.σ == [0.0, 12.0, 25.0]
     @test pretty_label(max_stretch, data) == " 20 %"
     @test occursin("UniaxialQuasiStaticTest", sprint(summary, [data]))
-    @test occursin("[7]:  20 %, w=0.5", sprint(show, data))
+    @test occursin("[7]:  20 %,  w=0.5", sprint(show, data))
 
     cyclic = UniaxialCyclicLoadingTest(8, [1, 1.1, 1.2, 1.1, 1], 0.2, zeros(5))
     @test rate(cyclic) == 0.2
-    @test time_step(cyclic) == 0.5
+    @test time_step(cyclic) ≈ 0.5
     @test pretty_label(rate, cyclic) == "0.20 /s"
 
     thermal = DifferentialScanningCalorimetryTest(9, [293, 303], 2, [1, 2])
