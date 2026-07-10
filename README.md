@@ -30,7 +30,7 @@ using Optim
 using CSV
 using Plots
 
-experiments = CSV.read(joinpath(@__DIR__, "quasi_static_tests.csv"), UniaxialQuasiStaticTest)
+experiments = CSV.read(joinpath(@__DIR__, "quasi_static_tests.csv"), UniaxialQuasiStaticTest, decimal='.')
 
 build_model(μ, N) = EightChain(μ=μ, N=N)
 pn = [  "μ",   "N"]  # Parameter names
@@ -38,7 +38,7 @@ p0 = [  1e4,   1.0]  # Initial seed
 
 f(p) = loss(build_model, p, experiments)
 
-model_params = optimize(f, p0, NelderMead())
-model = build_model(model_params...)
+result = optimize(f, p0, NelderMead())
+model = build_model(result.minimizer...)
 plot(model, experiments[1], xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
 ```
