@@ -1,4 +1,6 @@
 
+# --- Experiments base ---
+
 """
 Abstract type holding the quantity of interest of the experimental test.
 """
@@ -23,7 +25,8 @@ abstract type AbstractGeometry end
 # --- Kinematics ---
 
 """
-Abstract type dfining the mechanical loading protocol.
+Abstract type dfining the mechanical loading protocol such as [`Uniaxial`](@ref) or [`Biaxial`](@ref),
+allowing to compute the deformation gradient at one Gauss point.
 """
 abstract type Kinematics end
 
