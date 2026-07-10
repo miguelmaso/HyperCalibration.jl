@@ -43,7 +43,7 @@ Order = [:type, :function]
 ### Reduced kinematics
 
 Internal kinematic maps (deformation gradient construction, thermal Jacobian
-solve) used by `ConstitutiveModelling` to reduce a 3D constitutive model to
+solve) used by [`ConstitutiveModelling`](@ref) to reduce a 3D constitutive model to
 the 1D/2D loading states of a given [`Kinematics`](@ref) (uniaxial, biaxial).
 
 ```@autodocs

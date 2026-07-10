@@ -1,12 +1,30 @@
 
+"""
+Abstract type holding the quantity of interest of the experimental test.
+"""
 abstract type AbstractMeasurement end
+
+"""
+Abstract type holding the dynamic primary variables of the experimental test, such as the sequence of strains.
+"""
 abstract type AbstractProtocol end
+
+"""
+Abstract type holding the static primary variables of the experimental test, such as the isothermal conditions.
+"""
 abstract type AbstractCondition end
+
+"""
+Abstract type holding the geometry of the specimen being tested.
+"""
 abstract type AbstractGeometry end
 
 
 # --- Kinematics ---
 
+"""
+Abstract type dfining the mechanical loading protocol.
+"""
 abstract type Kinematics end
 
 """

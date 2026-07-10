@@ -21,7 +21,7 @@ end
 
 """
 Return the thermally-induced volumetric Jacobian `J` for a
-[`ThermalVolumetric`](@ref) model at a given temperature `θ`, solved by a
+`ThermalVolumetric` model at a given temperature `θ`, solved by a
 Newton iteration on the zero-pressure condition `pressure(J) = 0`.
 """
 function J_thermal(m::ThermalVolumetric, θ::Float64)
