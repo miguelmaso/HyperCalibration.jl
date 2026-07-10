@@ -252,26 +252,26 @@ and conditionc C -environtmental static variables- and geometry G -for the refer
 Additionally, a weight can be assigned to the experiment to define its importance in the calibration process.
 """
 mutable struct ExperimentData{M<:AbstractMeasurement, P<:AbstractProtocol, C<:AbstractCondition, G<:AbstractGeometry}
+  const id::Int
   const measurement::M
   const protocol::P
   const condition::C
   const geometry::G
-  const id::Int
   weight::Float64
 end
 
 """
-Experiment data with mechanical measurement (stress) and mechanical protocol (stretch).
+Super type for ExperimentData with mechanical measurement (stress) and mechanical protocol (stretch).
 """
 MechanicalTest{P<:MechanicalProtocol, C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{TensileMeasurement, P, C, G}
 
 """
-An experiment data with thermal measurement (specific heat capacity) and thermal protocol (temperature).
+Super type fo ExperimentData with thermal measurement (specific heat capacity) and thermal protocol (temperature).
 """
 ThermalTest{C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{ThermalMeasurement, TemperatureSweepProtocol, C, G}
 
 """
-An experiment data with dielectric measurement (permittivity) and thermal protocol (temperature).
+Super type for ExperimentData with dielectric measurement (permittivity) and thermal protocol (temperature).
 """
 ThermoDielectricTest{C<:AbstractCondition, G<:AbstractGeometry} = ExperimentData{DielectricMeasurement, TemperatureSweepProtocol, C, G}
 

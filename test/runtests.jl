@@ -23,6 +23,7 @@ using HyperFEM
     @test pretty_label(max_stretch, data) == " 20 %"
     @test occursin("UniaxialQuasiStaticTest", sprint(summary, [data]))
     @test occursin("[7]:  20 %,  w=0.5", sprint(show, data))
+    @test UniaxialQuasiStaticTest([1.0, 1.1], [0.0, 1.0]).id == 0
 
     cyclic = UniaxialCyclicLoadingTest(8, [1, 1.1, 1.2, 1.1, 1], 0.2, zeros(5))
     @test rate(cyclic) == 0.2

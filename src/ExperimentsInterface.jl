@@ -1,67 +1,74 @@
 
 # --- Constructors ---
 
-function UniaxialQuasiStaticTest(id::Int, λ::AbstractArray, σ::AbstractArray, weight=1.0)
+function UniaxialQuasiStaticTest(id::Integer, λ::AbstractArray, σ::AbstractArray, weight=1.0)
   measurement = TensileMeasurement(σ)
   protocol = QuasiStaticProtocol{Uniaxial}(λ)
   condition = StandardCondition()
   geometry = PlateGeometry()
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+UniaxialQuasiStaticTest(λ::AbstractArray, σ::AbstractArray, weight=1.0) = UniaxialQuasiStaticTest(0, λ, σ, weight)
 
-function UniaxialCyclicLoadingTest(id::Int, λ::AbstractArray, v::Real, σ::AbstractArray, weight=1.0)
+function UniaxialCyclicLoadingTest(id::Integer, λ::AbstractArray, v::Real, σ::AbstractArray, weight=1.0)
   i_load = argmax(λ)-1  # This is the loading branch
   Δt = (λ[i_load]-λ[1]) / (i_load-1) / v
   measurement = TensileMeasurement(σ)
   protocol = CyclicLoadingProtocol{Uniaxial}(λ, v, Δt)
   condition = StandardCondition()
   geometry = PlateGeometry()
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+UniaxialCyclicLoadingTest(λ::AbstractArray, v::Real, σ::AbstractArray, weight=1.0) = UniaxialCyclicLoadingTest(0, λ, v, σ, weight)
 
-function UniaxialThermalQuasiStaticTest(id::Int, λ::AbstractArray, σ::AbstractArray, θ::Real, weight=1.0)
+function UniaxialThermalQuasiStaticTest(id::Integer, λ::AbstractArray, σ::AbstractArray, θ::Real, weight=1.0)
   measurement = TensileMeasurement(σ)
   protocol = QuasiStaticProtocol{Uniaxial}(λ)
   condition = IsothermalCondition(θ)
   geometry = PlateGeometry()
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+UniaxialThermalQuasiStaticTest(λ::AbstractArray, σ::AbstractArray, θ::Real, weight=1.0) = UniaxialThermalQuasiStaticTest(0, λ, σ, θ, weight)
 
-function UniaxialThermalCyclicLoadingTest(id::Int, λ::AbstractArray, v::Real, σ::AbstractArray, θ::Real, weight=1.0)
+function UniaxialThermalCyclicLoadingTest(id::Integer, λ::AbstractArray, v::Real, σ::AbstractArray, θ::Real, weight=1.0)
   i_load = argmax(λ)-1  # This is the loading branch
   Δt = (λ[i_load]-λ[1]) / (i_load-1) / v
   measurement = TensileMeasurement(σ)
   protocol = CyclicLoadingProtocol{Uniaxial}(λ, v, Δt)
   condition = IsothermalCondition(θ)
   geometry = PlateGeometry()
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+UniaxialThermalCyclicLoadingTest(λ::AbstractArray, v::Real, σ::AbstractArray, θ::Real, weight=1.0) = UniaxialThermalCyclicLoadingTest(0, λ, v, σ, θ, weight)
 
-function UniaxialThermoElectricCyclicLoadingTest(id::Int, λ::AbstractArray, v::Real, σ::AbstractArray, θ::Real, V::Real, thickness::Real, weight=1.0)
+function UniaxialThermoElectricCyclicLoadingTest(id::Integer, λ::AbstractArray, v::Real, σ::AbstractArray, θ::Real, V::Real, thickness::Real, weight=1.0)
   i_load = argmax(λ)-1  # This is the loading branch
   Δt = (λ[i_load]-λ[1]) / (i_load-1) / v
   measurement = TensileMeasurement(σ)
   protocol = CyclicLoadingProtocol{Uniaxial}(λ, v, Δt)
   condition = ThermoElectricalCondition(θ, V)
   geometry = PlateGeometry(thickness)
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+UniaxialThermoElectricCyclicLoadingTest(λ::AbstractArray, v::Real, σ::AbstractArray, θ::Real, V::Real, thickness::Real, weight=1.0) = UniaxialThermoElectricCyclicLoadingTest(0, λ, v, σ, θ, V, thickness, weight)
 
-function DifferentialScanningCalorimetryTest(id::Int, θ::AbstractArray, v::Real, cv::AbstractArray, weight=1.0)
+function DifferentialScanningCalorimetryTest(id::Integer, θ::AbstractArray, v::Real, cv::AbstractArray, weight=1.0)
   measurement = ThermalMeasurement(cv)
   protocol = TemperatureSweepProtocol(θ, v)
   condition = StandardCondition()
   geometry = PlateGeometry()
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+DifferentialScanningCalorimetryTest(θ::AbstractArray, v::Real, cv::AbstractArray, weight=1.0) = DifferentialScanningCalorimetryTest(0, θ, v, cv, weight)
 
-function DielectricSpectroscopyTest(id::Int, f::AbstractArray, ε::AbstractArray, θ::Real, weight=1.0)
+function DielectricSpectroscopyTest(id::Integer, f::AbstractArray, ε::AbstractArray, θ::Real, weight=1.0)
   measurement = DielectricMeasurement(ε)
   protocol = FrequencySweepProtocol(f)
   condition = IsothermalCondition(θ)
   geometry = PlateGeometry()
-  ExperimentData(measurement, protocol, condition, geometry, id, weight)
+  ExperimentData(id, measurement, protocol, condition, geometry, weight)
 end
+DielectricSpectroscopyTest(f::AbstractArray, ε::AbstractArray, θ::Real, weight=1.0) = DielectricSpectroscopyTest(0, f, ε, θ, weight)
 
 
 # --- Print ---
