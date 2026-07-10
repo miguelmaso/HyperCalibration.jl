@@ -28,6 +28,7 @@ The nominal stress recoded during a tensile test.
 struct TensileMeasurement <: AbstractMeasurement
   σ::Vector{Float64}
 end
+TensileMeasurement(σ::AbstractVector) = TensileMeasurement(collect(Float64, σ))
 
 """
 The specific heat capacity recoded during a thermal test.
@@ -35,6 +36,7 @@ The specific heat capacity recoded during a thermal test.
 struct ThermalMeasurement <: AbstractMeasurement
   cv::Vector{Float64}
 end
+ThermalMeasurement(cv::AbstractVector) = ThermalMeasurement(collect(Float64, cv))
 
 """
 The dielectric parmittivity recoded during a dielectric test.
@@ -42,6 +44,7 @@ The dielectric parmittivity recoded during a dielectric test.
 struct DielectricMeasurement <: AbstractMeasurement
   ε::Vector{Float64}
 end
+DielectricMeasurement(ε::AbstractVector) = DielectricMeasurement(collect(Float64, ε))
 
 
 # --- Protocols ---
@@ -62,6 +65,7 @@ A sequence of stretches.
 struct QuasiStaticProtocol{K<:Kinematics} <: MechanicalProtocol{K}
   λ::Vector{Float64}
 end
+QuasiStaticProtocol{K}(λ::AbstractVector) where {K<:Kinematics} = QuasiStaticProtocol{K}(collect(Float64, λ))
 
 """
 A sequence of stretches at a constant rate and time step.
@@ -71,6 +75,8 @@ struct CyclicLoadingProtocol{K<:Kinematics} <: MechanicalProtocol{K}
   v::Float64
   Δt::Float64
 end
+CyclicLoadingProtocol{K}(λ::AbstractVector, v::Real, Δt::Real) where {K<:Kinematics} =
+  CyclicLoadingProtocol{K}(collect(Float64, λ), Float64(v), Float64(Δt))
 
 """
 A sequence of times at a constant stretch.
@@ -79,6 +85,7 @@ struct CreepProtocol{K<:Kinematics} <: MechanicalProtocol{K}
   t::Vector{Float64}
   λ::Float64
 end
+CreepProtocol{K}(t::AbstractVector, λ::Real) where {K<:Kinematics} = CreepProtocol{K}(collect(Float64, t), Float64(λ))
 
 """
 A sequence of temperatures at constant rate.
@@ -87,6 +94,7 @@ struct TemperatureSweepProtocol <: AbstractProtocol
   θ::Vector{Float64}
   v::Float64
 end
+TemperatureSweepProtocol(θ::AbstractVector, v::Real) = TemperatureSweepProtocol(collect(Float64, θ), Float64(v))
 
 """
 A sequence of frequencies.
@@ -94,6 +102,7 @@ A sequence of frequencies.
 struct FrequencySweepProtocol <: AbstractProtocol
   f::Vector{Float64}
 end
+FrequencySweepProtocol(f::AbstractVector) = FrequencySweepProtocol(collect(Float64, f))
 
 """
 Return the sequence of stretches for a given protocol.
@@ -171,6 +180,7 @@ An experiment at a constant temperature.
 struct IsothermalCondition <: AbstractCondition
   θ::Float64
 end
+IsothermalCondition(θ::Real) = IsothermalCondition(Float64(θ))
 
 """
 An experiment at a constant voltage.
@@ -178,6 +188,7 @@ An experiment at a constant voltage.
 struct ElectricalCondition <: AbstractCondition
   V::Float64
 end
+ElectricalCondition(V::Real) = ElectricalCondition(Float64(V))
 
 """
 An experiment at a constant temperature and voltage.
@@ -186,6 +197,7 @@ struct ThermoElectricalCondition <: AbstractCondition
   θ::Float64
   V::Float64
 end
+ThermoElectricalCondition(θ::Real, V::Real) = ThermoElectricalCondition(Float64(θ), Float64(V))
 
 """
 Return the room temperature for a given condition.
@@ -218,7 +230,8 @@ end
 
 PlateGeometry() = PlateGeometry(0.0, 0.0)
 
-PlateGeometry(t0) = PlateGeometry(t0, 0.0)
+PlateGeometry(t0::Real) = PlateGeometry(t0, 0.0)
+PlateGeometry(t0::Real, A0::Real) = PlateGeometry(Float64(t0), Float64(A0))
 
 """
 Return the thickness for a given geometry.
@@ -230,7 +243,7 @@ thickness(g::PlateGeometry) = g.t0
 """
 Return the electric field for a given condition and geometry.
 """
-electric_field(::AbstractCondition, ::AbstractGeometry) = voltage(c) / thickness(g)
+electric_field(c::AbstractCondition, g::AbstractGeometry) = voltage(c) / thickness(g)
 
 
 # --- Experiments ---
@@ -250,6 +263,8 @@ mutable struct ExperimentData{M<:AbstractMeasurement, P<:AbstractProtocol, C<:Ab
   const id::Int
   weight::Float64
 end
+ExperimentData(m::M, p::P, c::C, g::G, id::Integer, weight::Real) where {M<:AbstractMeasurement, P<:AbstractProtocol, C<:AbstractCondition, G<:AbstractGeometry} =
+  ExperimentData(m, p, c, g, Int(id), Float64(weight))
 
 """
 Experiment data with mechanical measurement (stress) and mechanical protocol (stretch).
