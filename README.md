@@ -2,7 +2,7 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://miguelmaso.github.io/HyperCalibration.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://miguelmaso.github.io/HyperCalibration.jl/dev/)
-[![Build Status](https://github.com/miguelmaso/HyperCalibration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/miguelmaso/HyperCalibration/actions/workflows/ci.yml?branch=main)
+[![Build Status](https://github.com/miguelmaso/HyperCalibration.jl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/miguelmaso/HyperCalibration.jl/actions/workflows/ci.yml?branch=main)
 
 Tools for the calibration of hyperelastic constitutive models, built on top of [HyperFEM.jl](https://github.com/MultiSimOLab/HyperFEM.jl).
 
