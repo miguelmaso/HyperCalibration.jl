@@ -1,4 +1,52 @@
 
+# --- Specialisation of ExperimentData ---
+
+"""
+Experiment data with uniaxial quasi-static stretch-stress and standard conditions.
+"""
+const UniaxialQuasiStaticTest = ExperimentData{TensileMeasurement, QuasiStaticProtocol{Uniaxial}, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with constant rate uniaxial stretch-stress and standard conditions.
+"""
+const UniaxialCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with uniaxial relaxation stressess and standard conditions.
+"""
+const UniaxialRelaxationTest = ExperimentData{TensileMeasurement, SequentialProtocol{Uniaxial}, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with uniaxial quasi-static stretch-stress and thermal conditions.
+"""
+const UniaxialThermalQuasiStaticTest = ExperimentData{TensileMeasurement, QuasiStaticProtocol{Uniaxial}, IsothermalCondition, PlateGeometry}
+
+"""
+Experiment data with constant rate uniaxial stretch-stress and thermal conditions.
+"""
+const UniaxialThermalCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, IsothermalCondition, PlateGeometry}
+
+"""
+Experiment data with uniaxial relaxation stressess and thermal conditions.
+"""
+const UniaxialThermalRelaxationTest = ExperimentData{TensileMeasurement, SequentialProtocol{Uniaxial}, IsothermalCondition, PlateGeometry}
+
+"""
+Experiment data with constant rate uniaxial stretch-stress and coupled thermo-electrical conditions.
+"""
+const UniaxialThermoElectricCyclicLoadingTest = ExperimentData{TensileMeasurement, CyclicLoadingProtocol{Uniaxial}, ThermoElectricalCondition, PlateGeometry}
+
+"""
+Experiment data with temperature-specific heat capacity (DSC).
+"""
+const DifferentialScanningCalorimetryTest = ExperimentData{ThermalMeasurement, TemperatureSweepProtocol, StandardCondition, PlateGeometry}
+
+"""
+Experiment data with frequency-dielectric permittivity (BDS).
+"""
+const DielectricSpectroscopyTest = ExperimentData{DielectricMeasurement, FrequencySweepProtocol, StandardCondition, PlateGeometry}
+
+
 # --- Constructors ---
 
 function UniaxialQuasiStaticTest(id::Integer, λ::AbstractArray, σ::AbstractArray, weight=1.0)
