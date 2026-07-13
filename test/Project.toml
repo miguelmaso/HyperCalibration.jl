@@ -1,0 +1,8 @@
+[deps]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+HyperCalibration = "ee002675-c223-4b35-9440-54b3dbf2facf"
+HyperFEM = "ddbf423a-3df4-409e-9685-3dc416cae46c"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[sources]
+HyperCalibration = {path = ".."}
