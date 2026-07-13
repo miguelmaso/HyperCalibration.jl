@@ -43,3 +43,7 @@ result = optimize(f, p0, NelderMead())
 model = build_model(result.minimizer...)
 plot(model, experiments[1], xlabel="Stretch [-]", ylabel="Stress [KPa]", units_scale=1e-3)
 ```
+
+## Project funded by
+
+- Grants PID2022-141957OA-C22/PID2022-141957OB-C22 funded by MCIN/AEI/ 10.13039/501100011033
