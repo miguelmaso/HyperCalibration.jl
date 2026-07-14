@@ -3,7 +3,7 @@
 
 """
 Return the isotropic (volumetric) deformation gradient corresponding to a
-given Jacobian `J`, i.e. `F = J^(1/3) * I`.
+given Jacobian `J`, i.e. ``\\mathbf{F} = J^{1/3} * \\mathbf{I}``.
 """
 function F_volumetric(J::Real)
   λ = J^(1/3)
@@ -11,19 +11,19 @@ function F_volumetric(J::Real)
 end
 
 """
-Return the thermally-induced volumetric Jacobian `J` for a given physical
-model and temperature. Defaults to `1.0` (no thermal expansion) for models
-that do not couple volume to temperature.
+Return the thermally-induced volumetric Jacobian `J` for a given constitutive
+`model`, evaluated either directly at a temperature `θ` or at the
+temperature extracted from an [`AbstractCondition`](@ref).
+
+- Defaults to `1.0` (no thermal expansion) for any model that does not couple
+volume to temperature.
+- For a thermo-mechanical model, `J` is instead solved by a Newton iteration
+on the zero-pressure condition `pressure(J) = 0`
 """
 function J_thermal(::PhysicalModel, ::Float64)
   1.0
 end
 
-"""
-Return the thermally-induced volumetric Jacobian `J` for a
-`ThermalVolumetric` model at a given temperature `θ`, solved by a
-Newton iteration on the zero-pressure condition `pressure(J) = 0`.
-"""
 function J_thermal(m::ThermalVolumetric, θ::Float64)
   _, ∂Ψ∂F, _, ∂∂Ψ∂FF, _, _ = m()
   pressure(J) = 1/3 * tr(∂Ψ∂F(F_volumetric(J), θ)) * J^(-2/3)
@@ -47,20 +47,10 @@ function J_thermal(m::ThermalVolumetric, θ::Float64)
   J0
 end
 
-"""
-Return the thermally-induced volumetric Jacobian for a given physical model
-and [`AbstractCondition`](@ref), by extracting the temperature from the
-condition. Defaults to `1.0` for models that do not couple volume to
-temperature.
-"""
 function J_thermal(m::PhysicalModel, c::AbstractCondition)
   1.0
 end
 
-"""
-Return the thermally-induced volumetric Jacobian for a `ThermoMechano` model
-under the given [`AbstractCondition`](@ref).
-"""
 function J_thermal(m::ThermoMechano, c::AbstractCondition)
   θ = temperature(c)
   J_thermal(m, θ)
@@ -70,39 +60,33 @@ end
 # --- Deformation gradient ---
  
 """
-Return the purely volumetric deformation gradient for a given physical model
-at temperature `θ`, with the Jacobian solved by [`J_thermal`](@ref).
+Return the deformation gradient `F` for a given physical `model` and loading
+state, including any thermally-induced volumetric contribution computed via
+[`J_thermal`](@ref).
+
+- `calculate_F(model, θ)` returns the purely volumetric `F` at temperature `θ`
+- `calculate_F(model, ::Type{Uniaxial}, λ, condition)` returns `F` for a
+  [Uniaxial](@ref) stretch `λ` and possibly thermal `condition`.
+- `calculate_F(model, ::Type{Biaxial}, λ, condition)` returns `F` for a
+  [Biaxial](@ref) stretch `λ` and possibly thermal `condition`.
+- `calculate_F(model, λ1, λ2, condition)` returns `F` for an independently
+  biaxial state with stretches `λ1` and `λ2` under the given `condition`. 
 """
 function calculate_F(m::PhysicalModel, θ::Float64)
   J = J_thermal(m, θ)
   F_volumetric(J)
 end
 
-"""
-Return the deformation gradient for a [`Uniaxial`](@ref) kinematics test at
-stretch `λ` under the given [`AbstractCondition`](@ref), including any
-thermally-induced volumetric contribution.
-"""
 function calculate_F(m::PhysicalModel, ::Type{Uniaxial}, λ::Real, c::AbstractCondition)
   J = J_thermal(m, c)
   TensorValue(λ, 0, 0, 0, λ^(-1/2), 0, 0, 0, λ^(-1/2)) .* J^(1/3)
 end
 
-"""
-Return the deformation gradient for a [`Biaxial`](@ref) kinematics test at
-stretch `λ` under the given [`AbstractCondition`](@ref), including any
-thermally-induced volumetric contribution.
-"""
 function calculate_F(m::PhysicalModel, ::Type{Biaxial}, λ::Real, c::AbstractCondition)
   J = J_thermal(m, c)
   TensorValue(λ, 0, 0, 0, λ, 0, 0, 0, λ^(-2)) .* J^(1/3)
 end
 
-"""
-Return the deformation gradient for an independently biaxial test with
-stretches `λ1` and `λ2` under the given [`AbstractCondition`](@ref),
-including any thermally-induced volumetric contribution.
-"""
 function calculate_F(m::PhysicalModel, λ1::Real, λ2::Real, c::AbstractCondition)
   J = J_thermal(m, c)
   TensorValue(λ1, 0, 0, 0, λ2, 0, 0, 0, (λ1*λ2)^(-1)) .* J^(1/3)
