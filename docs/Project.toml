@@ -4,3 +4,6 @@ HyperCalibration = "ee002675-c223-4b35-9440-54b3dbf2facf"
 
 [sources]
 HyperCalibration = {path = ".."}
+
+[compat]
+Documenter = "1.17.0"
