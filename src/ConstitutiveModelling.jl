@@ -28,23 +28,15 @@ end
 
 # --- Tensile tests: viscoelastic material ---
 
-function new_state(model::ViscoElastic, F, Fn, A...)
-  map(model.branches, A) do b, Ai
-    _, Se, ∂Se∂Ce = SecondPiola(b.elasto)
-    HyperFEM.PhysicalModels.ReturnMapping(b, Se, ∂Se∂Ce, F, Fn, Ai)[2]
-  end
-end
-
 function evaluate_stress(model::ViscoElastic, protocol::MechanicalProtocol{K}, cond::AbstractCondition, ::AbstractGeometry) where {K<:Kinematics}
   update_time_step!(model, time_step(protocol))
   P_func = model()[2]
-  n  = length(model.branches)
-  A  = ntuple(_ -> VectorValue(I3..., 0.0), Val(n))
+  A = initialize_state(model)
   Fn = calculate_F(model, K, 1.0, cond)
   map(stretches(protocol)) do λ
     F = calculate_F(model, K, λ, cond)
     P = try P_func(F, Fn, A...) catch; zeros(3,3) end
-    A = try new_state(model, F, Fn, A...) catch; A end
+    A = return_mapping(model, F, Fn, A...)
     Fn = F               # Update the previous deformation gradient for the next iteration
     p = -P[3,3] * F[3,3]  # Volumetric pressure term
     return P[1,1] + p / F[1,1]
@@ -55,13 +47,12 @@ function evaluate_stress(model::ThermoMechano{<:Any,<:ViscoElastic}, protocol::M
   update_time_step!(model, time_step(protocol))
   θ = temperature(cond)
   P_func = model()[2]
-  n  = length(model.branches)
-  A  = ntuple(_ -> VectorValue(I3..., 0.0), Val(n))
+  A = initialize_state(model)
   Fn = calculate_F(model, K, 1.0, cond)
   map(stretches(protocol)) do λ
     F = calculate_F(model, K, λ, cond)
     P = try P_func(F, θ, Fn, A...) catch; zeros(3,3) end
-    A = try new_state(model, F, θ, Fn, A...) catch; A end
+    A = try return_mapping(model, F, θ, Fn, A...) catch; A end
     Fn = F               # Update the previous deformation gradient for the next iteration
     p = -P[3,3] * F[3,3]  # Volumetric pressure term
     return P[1,1] + p / F[1,1]
@@ -75,8 +66,7 @@ function evaluate_stress(model::ThermoElectroMechano{<:Any,<:Electro,<:ViscoElas
   θ = temperature(cond)
   E0 = electric_field(cond, geom)
   P_func, ∂P_func = model()[[2,5]]
-  n  = length(model.mechano.branches)
-  A  = ntuple(_ -> VectorValue(I3..., 0.0), Val(n))
+  A = initialize_state(model)
   λ2 = 1.0
   Fn = calculate_F(model, 1.0, λ2, cond)
   
@@ -113,7 +103,7 @@ function evaluate_stress(model::ThermoElectroMechano{<:Any,<:Electro,<:ViscoElas
       @warn "Not converged, V=$V, θ=$θ, λ=$λ"
     end
     P, F = evaluate_P(λ1, λ2, E)
-    A = new_state(model.mechano, F, Fn, A...)
+    A = return_mapping(model.mechano, F, Fn, A...)
     Fn = F
     return P[1,1], λ2_guess
   end
