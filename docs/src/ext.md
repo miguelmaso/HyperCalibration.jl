@@ -46,7 +46,7 @@ prompting you to add a `build_experiment` method for it.
 
 ## Plotting — `HyperCalibrationPlots`
 
-Loaded automatically when `Plots` is loaded alongside `HyperCalibration`.
+Loaded automatically when [`Plots`](https://docs.juliaplots.org/stable/) is loaded alongside `HyperCalibration`.
 Adds `Plots.jl` recipes for visually comparing a constitutive model's
 predictions against experimental data:
 
