@@ -316,9 +316,10 @@ electric_field(d::ExperimentData)       = electric_field(d.condition, d.geometry
 
 # --- Experiment labels ---
 
+pretty_label(f::Function)               = d -> pretty_label(f, d)
 pretty_label(f::Function, d)            = string(f(d))
 pretty_label(f::typeof(rate), d)        = @sprintf("%.2f ", f(d)) * rate_units(d)
-pretty_label(f::typeof(max_stretch), d) = @sprintf("%3.0f %%", 100*(f(d)-1))
+pretty_label(f::typeof(max_stretch), d) = @sprintf("%3.0f %%", round(100*(f(d)-1), digits=-1))
 pretty_label(f::typeof(temperature), d) = @sprintf("%2.0f ºC", f(d)-273.15)
 pretty_label(f::typeof(voltage), d)     = @sprintf("%4d V", f(d))
 pretty_label(fs::Tuple{Vararg{Function}}, d) = join(map(f -> pretty_label(f, d), fs), ", ")
