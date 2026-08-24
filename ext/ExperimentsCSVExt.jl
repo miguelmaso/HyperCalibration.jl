@@ -4,8 +4,8 @@ using HyperCalibration
 using CSV
 
 
-function CSV.read(filepath::String, ::Type{T}; thickness=0.0, kwargs...) where {T <: ExperimentData}
-  data = CSV.File(filepath; kwargs...)
+function CSV.read(source, ::Type{T}; thickness=0.0, kwargs...) where {T <: ExperimentData}
+  data = CSV.File(source; kwargs...)
 
   # Group row indices by id. We use get! to initialize an empty Int array for new IDs, then push! the row index
   grouped_indices = Dict{eltype(data.id), Vector{Int}}()
