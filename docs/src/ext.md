@@ -8,7 +8,7 @@ convenience methods on top of it.
 
 ## CSV loading — `ExperimentsCSVExt`
 
-Loaded automatically when `CSV` is loaded alongside `HyperCalibration`. Adds
+Loaded automatically when [`CSV`](https://csv.juliadata.org/stable/) is loaded alongside `HyperCalibration`. Adds
 a `CSV.read` method that parses a CSV file directly into a vector of
 [`ExperimentData`](@ref):
 
@@ -22,9 +22,22 @@ Rows are grouped by an `id` column, and one `ExperimentData` is built per
 group. The expected columns depend on the target test type — e.g.
 `UniaxialQuasiStaticTest` expects `id`, `stretch`, `stress`; a thermal
 variant such as `UniaxialThermalCyclicLoadingTest` additionally expects
-`vel` and `temp`. A `thickness` keyword can be passed for tests that need a
+`rate` and `temp`. A `thickness` keyword can be passed for tests that need a
 specimen thickness (`UniaxialThermoElectricCyclicLoadingTest`); it defaults
 to `0.0` otherwise.
+
+In the case the header in the CSV data does not coincide with the expected keywords,
+the `header` option can be passed to the reader, e.g.:
+
+```julia
+data = IOBuffer("#, λ, σ
+1, 1.0, 0.0
+1, 1.091769158, 5823.352789
+1, 1.19820246, 7726.97553
+1, 1.297540208, 9757.927377
+")
+experiments = CSV.read(data, UniaxialQuasiStaticTest, header=[:id, :stretch, :stress], skipto=2)
+```
 
 Supported target types are the [test presets](@ref "Test presets") in
 `ExperimentsInterface.jl`. Requesting an unsupported type raises an error
