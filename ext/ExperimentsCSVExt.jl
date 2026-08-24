@@ -28,10 +28,10 @@ function build_experiment(::Type{UniaxialQuasiStaticTest}, data, id, indices, th
 end
 
 function build_experiment(::Type{UniaxialCyclicLoadingTest}, data, id, indices, thickness)
-  vel = data.vel[indices[1]]
+  rate = data.rate[indices[1]]
   λ = @view data.stretch[indices]
   σ = @view data.stress[indices]
-  UniaxialCyclicLoadingTest(id, λ, vel, σ)
+  UniaxialCyclicLoadingTest(id, λ, rate, σ)
 end
 
 function build_experiment(::Type{UniaxialThermalQuasiStaticTest}, data, id, indices, thickness)
@@ -42,20 +42,20 @@ function build_experiment(::Type{UniaxialThermalQuasiStaticTest}, data, id, indi
 end
 
 function build_experiment(::Type{UniaxialThermalCyclicLoadingTest}, data, id, indices, thickness)
-  vel = data.vel[indices[1]]
+  rate = data.rate[indices[1]]
   θ = data.temp[indices[1]]
   λ = @view data.stretch[indices]
   σ = @view data.stress[indices]
-  UniaxialThermalCyclicLoadingTest(id, λ, vel, σ, θ)
+  UniaxialThermalCyclicLoadingTest(id, λ, rate, σ, θ)
 end
 
 function build_experiment(::Type{UniaxialThermoElectricCyclicLoadingTest}, data, id, indices, thickness)
-  vel = data.vel[indices[1]]
+  rate = data.rate[indices[1]]
   θ = data.temp[indices[1]]
   V = data.voltage[indices[1]]
   λ = @view data.stretch[indices]
   σ = @view data.stress[indices]
-  UniaxialThermoElectricCyclicLoadingTest(id, λ, vel, σ, θ, V, thickness)
+  UniaxialThermoElectricCyclicLoadingTest(id, λ, rate, σ, θ, V, thickness)
 end
 
 function build_experiment(::Type{DifferentialScanningCalorimetryTest}, data, id, indices, thickness)
