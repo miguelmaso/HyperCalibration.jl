@@ -36,7 +36,7 @@ p0 = [1.0e6,  0.5, 1.0e9 ]  # Initial seed
 lb = [ 10.0,  0.0, 1.0e8 ]  # Minimum search limits
 ub = [1.0e8,  1.0, 1.0e10]  # Maximum search limits
 
-opt_func = OptimizationFunction((p, d) -> loss(build_heat, p, d))
+opt_func = OptimizationFunction((p, d) -> normalized_mse(build_heat, p, d))
 opt_prob = OptimizationProblem(opt_func, p0, set_1_cal, lb=lb, ub=ub)
 opt_heat = solve(opt_prob, ParticleSwarm(lower=lb, upper=ub, n_particles=100), maxiters=1000, maxtime=30)
 sol_heat = opt_heat.u
@@ -68,7 +68,7 @@ p0 = [  3e4,   -2e2,    3e0]  # Initial seed
 lb = [1.0e3, -2.0e3,  0.0e0]  # Minimum search limits
 ub = [2.0e5,  2.0e3,  2.0e2]  # Maximum search limits
 
-opt_func = OptimizationFunction((p,d) -> loss(build_longterm, p, d))
+opt_func = OptimizationFunction((p,d) -> normalized_mse(build_longterm, p, d))
 opt_prob_ps = OptimizationProblem(opt_func, p0, set_2_quasi, lb=lb, ub=ub)
 opt_long_ps = solve(opt_prob_ps, ParticleSwarm(lower=lb, upper=ub, n_particles=1000), maxiters=1000, maxtime=30)
 opt_prob_nm = OptimizationProblem(opt_func, opt_long_ps.u, set_2_quasi)
@@ -94,7 +94,7 @@ ub = reduce(vcat, [  1e5,   4.0] for _ in 1:n_branches)  # Upper search limits
 
 set_4_load_ref = filter(r -> temperature(r) ≈ θr, set_4_load)
 
-opt_func = OptimizationFunction((p,d) -> loss(build_visco, p, d))
+opt_func = OptimizationFunction((p,d) -> normalized_mse(build_visco, p, d))
 opt_prob_ps  = OptimizationProblem(opt_func, p0, set_4_load_ref, lb=lb, ub=ub)
 opt_visco_ps = solve(opt_prob_ps, ParticleSwarm(lower=lb, upper=ub, n_particles=500), maxiters=1000, maxtime=60)
 opt_prob_nm  = OptimizationProblem(opt_func, opt_visco_ps.u, set_4_load_ref)
