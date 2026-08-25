@@ -21,10 +21,11 @@ function experiment_prediction(model::PhysicalModel, data::ThermoDielectricTest)
 end
 
 """
+Normalized mean squared error (MSE) loss function.
 Compute the loss function for a given constitutive model and one/multiple experimental tests
 as the weighted normalized squared difference between the predicted and the measured values.
 """
-function loss(model::PhysicalModel, data::ExperimentData)
+function normalized_mse(model::PhysicalModel, data::ExperimentData)
   y_true, y_pred = experiment_prediction(model, data)
   y_max = maximum(abs.(y_true))
   s2 = zero(eltype(y_true))
@@ -34,11 +35,11 @@ function loss(model::PhysicalModel, data::ExperimentData)
   return data.weight * s2 / length(y_true)
 end
 
-function loss(model::PhysicalModel, data::Vector{<:ExperimentData})
-  sum(loss(model, d) for d in data) / sum(d.weight for d in data)
+function normalized_mse(model::PhysicalModel, data::Vector{<:ExperimentData})
+  sum(normalized_mse(model, d) for d in data) / sum(d.weight for d in data)
 end
 
-function loss(model_builder, params, data)
+function normalized_mse(model_builder, params, data)
   model = model_builder(params...)
-  loss(model, data)
+  normalized_mse(model, data)
 end
