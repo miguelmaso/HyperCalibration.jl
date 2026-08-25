@@ -8,6 +8,6 @@
   observed, replayed = experiment_prediction(model, data)
   @test observed == data.measurement.σ
   @test replayed == predicted
-  @test loss(model, data) ≥ 0
-  @test loss(model, [data]) == loss(model, data)
+  @test normalized_mse(model, data) ≥ 0
+  @test normalized_mse(model, [data]) == normalized_mse(model, data)
 end
