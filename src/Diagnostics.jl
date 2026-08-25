@@ -11,7 +11,7 @@ struct CalibrationResult{B, P, D}
     params::P
     data::D
     model::PhysicalModel
-    CalibrationResult(builder, params, data) = new{typeof(builder), typeof(params), typeof(data)}(builder, params, data, builder(params...))
+    CalibrationResult(builder::B, params::P, data::D) where {B,P,D} = new{B,P,D}(builder, params, data, builder(params...))
 end
 
 """
@@ -103,7 +103,6 @@ r2_score(res::CalibrationResult) = r2_score(res.model, res.data)
 
 # --- Parameter Statistics & Pretty Printing ---
 
-"""A simple approximation for t-quantile at 97.5% (alpha=0.05)."""
 function t_critical_975(dof::Int)
   dof >= 30 && return 1.96
   # Rational approximation for two-tailed 95% t-critical values without Distributions.jl
