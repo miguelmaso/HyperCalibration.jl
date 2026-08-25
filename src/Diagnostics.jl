@@ -118,7 +118,7 @@ function parameter_stats(res::CalibrationResult; names=map(i -> "p$i", 1:length(
   n_params = length(res.params)
   n_data = npoints(res.data)
   n_dof = max(1, n_data - n_params)
-  
+
   cov_mat, JtJ, sse = covariance_matrix(res)
   t_crit = t_critical_975(n_dof)
 
@@ -128,7 +128,7 @@ function parameter_stats(res::CalibrationResult; names=map(i -> "p$i", 1:length(
 
   # Normalized sensitivity coefficient: (∂²E/∂p²) * p² / SSE ≈ 2*(J'J)_ii * p² / SSE
   sensitivities = [2JtJ[i,i] * res.params[i]^2 / sse for i in 1:n_params]
-  
+
   return ParameterStats(names, res.params, std_errs, zip(ci_lower, ci_upper) |> collect, sensitivities, r2_score(res))
 end
 
