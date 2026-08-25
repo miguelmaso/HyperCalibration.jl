@@ -50,3 +50,10 @@ export evaluate_epsilon
 
 export experiment_prediction
 export normalized_mse
+
+export CalibrationResult
+export ParameterStats
+export r2_score
+export covariance_matrix
+export parameter_stats
+export sample_parameters
