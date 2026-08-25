@@ -66,3 +66,14 @@ Modules = [HyperCalibration]
 Pages = ["ObjectiveFunctions.jl"]
 Order = [:type, :function]
 ```
+
+### Diagnostics
+
+Statistical measures of the goodness of fit and the uncertainty of the
+fitted parameters.
+
+```@autodocs
+Modules = [HyperCalibration]
+Pages = ["Diagnostics.jl"]
+Order = [:type, :function]
+```

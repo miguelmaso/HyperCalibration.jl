@@ -4,7 +4,7 @@ using LinearAlgebra, Statistics
 # --- Storage & Wrapper Structs ---
 
 """
-A struct to hold the results of a calibration process.
+A struct that holds the results of a calibration process.
 """
 struct CalibrationResult{B, P, D}
     builder::B
@@ -15,7 +15,9 @@ struct CalibrationResult{B, P, D}
 end
 
 """
-A struct to hold parameter statistics after calibration.
+A struct returned by [`parameter_stats`](@ref), gathering the
+standard errors, confidence intervals and normalized sensitivity
+for the calibrated parameters.
 """
 struct ParameterStats{P, E, C, S}
     names::Vector{String}
@@ -34,11 +36,6 @@ function residuals(model::PhysicalModel, data)
     return y_true .- y_pred
 end
 
-"""
-    finite_difference_jacobian(model_builder, params, data; h_rel=1e-5)
-
-Computes the residual Jacobian J_ij = ∂r_i / ∂p_j via central differences.
-"""
 function finite_difference_jacobian(model_builder, params, data; h_rel=1e-5)
     r0 = residuals(model_builder(params...), data)
     n_res = length(r0)
@@ -64,6 +61,10 @@ end
 
 # --- Covariance Matrix via SVD ---
 
+"""
+Compute the covariance matrix of a [`CalibrationResult`](@ref) via
+the Jacobian of the residual J_ij = ∂r_i / ∂p_j evaluated with central differences.
+"""
 function covariance_matrix(res::CalibrationResult)
     J = finite_difference_jacobian(res.builder, res.params, res.data)
     r = residuals(res.model, res.data)
@@ -109,9 +110,10 @@ function t_critical_975(dof::Int)
   return 1.96 + (2.378 / dof) + (2.64 / (dof^2))
 end
 
-
 """
-Evaluate the standard errors, confidence intervals and normalized sensitivity for the calibrated parameters.
+Evaluate the standard errors, confidence intervals and
+normalized sensitivity for the calibrated parameters.
+Returns a [`ParameterStats`](@ref) struct.
 """
 function parameter_stats(res::CalibrationResult; names=map(i -> "p$i", 1:length(res.params)))
   n_params = length(res.params)
@@ -150,7 +152,7 @@ end
 """
     sample_parameters(res::CalibrationResult, n_samples=100)
 
-Generates parameter samples following a normal multivariate distribution N(params, Cov).
+Generates *n* parameter samples according to a normal multivariate distribution `N(params, Cov)`.
 """
 function sample_parameters(res::CalibrationResult, n_samples::Int=100)
   cov_mat, _, _ = covariance_matrix(res)

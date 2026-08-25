@@ -53,7 +53,7 @@ export normalized_mse
 
 export CalibrationResult
 export ParameterStats
-export r2_score
 export covariance_matrix
+export r2_score
 export parameter_stats
 export sample_parameters
