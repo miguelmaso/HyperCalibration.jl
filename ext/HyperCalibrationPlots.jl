@@ -7,6 +7,11 @@ using Plots.RecipesBase
 import HyperFEM.PhysicalModels: PhysicalModel  # FIXME: This import must be removed after the HyperFEM 0.0.4 release
 
 
+@recipe function f(res::CalibrationResult, data=res.data)
+  res.model, data
+end
+
+
 @recipe function f(model::PhysicalModel, datasets::AbstractVector{<:ExperimentData})
 
   user_labels = get(plotattributes, :label, nothing)
