@@ -5,6 +5,7 @@ authors = ["Miguel Masó <miguel.maso@upc.edu>", "MultiSimOLab"]
 
 [deps]
 HyperFEM = "ddbf423a-3df4-409e-9685-3dc416cae46c"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [weakdeps]
@@ -17,7 +18,8 @@ HyperCalibrationPlots = "Plots"
 
 [compat]
 CSV = "0.10"
-HyperFEM = "0.0.3, 0.0.4, 0.0.5"
+HyperFEM = "0.0.6"
+LinearAlgebra = "1.12"
 Plots = "1"
 Printf = "1"
 julia = "1.12"
