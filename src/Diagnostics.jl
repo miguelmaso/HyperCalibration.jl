@@ -11,7 +11,7 @@ struct CalibrationResult{B, P, D}
     params::P
     data::D
     model::PhysicalModel
-    CalibrationResult(builder, params, data) = new(builder, params, data, builder(params...))
+    CalibrationResult(builder, params, data) = new{typeof(builder), typeof{params}, typeof{data}}(builder, params, data, builder(params...))
 end
 
 """
