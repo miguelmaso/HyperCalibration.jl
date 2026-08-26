@@ -4,6 +4,8 @@ using LinearAlgebra, Statistics
 # --- Storage & Wrapper Structs ---
 
 """
+    CalibrationResult
+
 A struct that holds the results of a calibration process.
 """
 struct CalibrationResult{B, P, D}
@@ -15,6 +17,8 @@ struct CalibrationResult{B, P, D}
 end
 
 """
+    ParameterStats
+
 A struct returned by [`parameter_stats`](@ref), gathering the
 standard errors, confidence intervals and normalized sensitivity
 for the calibrated parameters.
@@ -62,7 +66,9 @@ end
 # --- Covariance Matrix via SVD ---
 
 """
-Compute the covariance matrix of a [`CalibrationResult`](@ref) via
+    covariance_matrix(calibration_result)
+
+Compute the covariance matrix from a [`CalibrationResult`](@ref) via
 the Jacobian of the residual ``J_{ij} = \\frac{\\partial r_i}{\\partial p_j}`` evaluated with central differences.
 """
 function covariance_matrix(res::CalibrationResult)
@@ -91,7 +97,12 @@ end
 
 # --- Predictions & Goodness of Fit ---
 
-"""Calculate the R² score for the model predictions against the experimental data."""
+"""
+    r2_score(calibration_result)
+    r2_score(model, data)
+
+Calculate the R² score for the model predictions against the experimental data.
+"""
 function r2_score(model::PhysicalModel, data)
     y_true, y_pred = experiment_prediction(model, data)
     ss_res = sum(abs2, y_true .- y_pred)
@@ -111,6 +122,8 @@ function t_critical_975(dof::Int)
 end
 
 """
+    parameter_stats
+
 Evaluate the standard errors, confidence intervals and
 normalized sensitivity for the calibrated parameters.
 Returns a [`ParameterStats`](@ref) struct.
