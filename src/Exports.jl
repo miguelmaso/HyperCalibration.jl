@@ -18,6 +18,7 @@ export independent_variable
 export time_step
 export rate
 export max_stretch
+export npoints
 
 export StandardCondition
 export IsothermalCondition
