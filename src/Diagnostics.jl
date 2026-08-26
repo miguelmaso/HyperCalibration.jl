@@ -63,7 +63,7 @@ end
 
 """
 Compute the covariance matrix of a [`CalibrationResult`](@ref) via
-the Jacobian of the residual J_ij = ∂r_i / ∂p_j evaluated with central differences.
+the Jacobian of the residual ``J_{ij} = \\frac{\\partial r_i}{\\partial p_j}`` evaluated with central differences.
 """
 function covariance_matrix(res::CalibrationResult)
     J = finite_difference_jacobian(res.builder, res.params, res.data)
