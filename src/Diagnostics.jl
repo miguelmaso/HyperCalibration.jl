@@ -148,6 +148,36 @@ function Base.show(io::IO, ::MIME"text/plain", stats::ParameterStats)
   end
 end
 
+function Base.show(io::IO, ::MIME"text/latex", stats::ParameterStats)
+    println(io, "Model Calibration Summary (\$R^2 = $(round(stats.r2, digits=4))\$) \\\\")
+    println(io, "\\begin{tabular}{l c r r}")
+    println(io, "\\hline")
+    println(io, "Param & Estimate \$\\pm\$ Margin & Rel. Err (\\%) & Sensitivity \\\\")
+    println(io, "\\hline")
+    for i in eachindex(stats.params)
+        abs_e = stats.params[i] - stats.ci_bounds[i][1]
+        rel_e = abs(abs_e / stats.params[i]) * 100
+        @printf(io, "\$%-8s\$ & \$%8.3g \\pm %-7.2g\$ & %12.1f & %10.1f \\\\\n", 
+                stats.names[i], stats.params[i], abs_e, rel_e, stats.sensitivities[i])
+    end
+    println(io, "\\hline")
+    println(io, "\\end{tabular}")
+end
+
+"""
+    latex_string(param_stats)
+
+Generate a string representing a summary with the [`ParameterStats`](@ref) to be copy-pasted into a ``\\LaTeX`` document.
+"""
+latex_string(x) = sprint(show, MIME("text/latex"), x)
+
+"""
+    latex_print(param_stats)
+
+Print a string representing a summary with the [`ParameterStats`](@ref) to be copy-pasted into a ``\\LaTeX`` document.
+"""
+latex_print(x) = print(latex_string(x))
+
 
 # --- Uncertainty Ensemble Generation ---
 
