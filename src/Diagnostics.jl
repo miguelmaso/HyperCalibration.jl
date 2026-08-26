@@ -133,6 +133,8 @@ function parameter_stats(res::CalibrationResult; names=map(i -> "p$i", 1:length(
   return ParameterStats(names, res.params, std_errs, zip(ci_lower, ci_upper) |> collect, sensitivities, r2_score(res))
 end
 
+Base.show(io::IO, stats::ParameterStats) = show(io, MIME("text/plain"), stats)
+
 function Base.show(io::IO, ::MIME"text/plain", stats::ParameterStats)
   println(io, "Model Calibration Summary (R² = $(round(stats.r2, digits=4))):")
   println(io, "--------------------------------------------------------")
@@ -141,7 +143,7 @@ function Base.show(io::IO, ::MIME"text/plain", stats::ParameterStats)
   for i in eachindex(stats.params)
     abs_e = stats.params[i] - stats.ci_bounds[i][1]
     rel_e = abs(abs_e / stats.params[i]) * 100
-    @printf(io, "%-8s | % 8.3g ± %-7.2g | %-12.1f | %-10.1f\n", 
+    @printf(io, "%-8s | %8.3g ± %-7.2g | %-12.1f | %-10.1f\n", 
             stats.names[i], stats.params[i], abs_e, rel_e, stats.sensitivities[i])
   end
 end
