@@ -1,6 +1,6 @@
 name = "HyperCalibration"
 uuid = "ee002675-c223-4b35-9440-54b3dbf2facf"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Miguel Masó <miguel.maso@upc.edu>", "MultiSimOLab"]
 
 [workspace]
