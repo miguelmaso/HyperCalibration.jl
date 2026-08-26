@@ -16,7 +16,7 @@ The main components of the package are:
 
 The package is a registered package, and can be installed with `Pkg.add`.
 ```julia
-julia> using Pkg; Pkg.add("Optim")
+julia> using Pkg; Pkg.add("HyperCalibration")
 ```
 or through the pkg REPL mode by typing
 ```

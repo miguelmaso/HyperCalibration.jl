@@ -3,7 +3,7 @@
 
 """
 Return the isotropic (volumetric) deformation gradient corresponding to a
-given Jacobian `J`, i.e. ``\\mathbf{F} = J^{1/3} * \\mathbf{I}``.
+given Jacobian `J`, i.e. ``\\mathbf{F} = J^{1/3} · \\mathbf{I}``.
 """
 function F_volumetric(J::Real)
   λ = J^(1/3)
