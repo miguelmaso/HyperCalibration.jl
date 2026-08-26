@@ -20,6 +20,11 @@ function experiment_prediction(model::PhysicalModel, data::ThermoDielectricTest)
   return y_true, y_pred
 end
 
+function experiment_prediction(model::PhysicalModel, data::Vector{<:ExperimentData})
+  y = map(d -> experiment_prediction(model, d), data)
+  return vcat(first.(y)...), vcat(last.(y)...)
+end
+
 """
 Normalized mean squared error (MSE) loss function.
 Compute the loss function for a given constitutive model and one/multiple experimental tests

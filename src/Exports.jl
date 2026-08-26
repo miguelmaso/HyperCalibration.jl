@@ -18,6 +18,7 @@ export independent_variable
 export time_step
 export rate
 export max_stretch
+export npoints
 
 export StandardCondition
 export IsothermalCondition
@@ -50,3 +51,10 @@ export evaluate_epsilon
 
 export experiment_prediction
 export normalized_mse
+
+export CalibrationResult
+export ParameterStats
+export covariance_matrix
+export r2_score
+export parameter_stats
+export sample_parameters

@@ -161,6 +161,11 @@ independent_variable(p::TemperatureSweepProtocol) = temperatures(p)
 independent_variable(p::FrequencySweepProtocol) = frequencies(p)
 
 """
+Return the number of sampling points for a given protocol.
+"""
+npoints(p::AbstractProtocol) = length(independent_variable(p))
+
+"""
 Return the constant time step for a given protocol.
 """
 time_step(::AbstractProtocol) = throw(ArgumentError("time_step not defined for this protocol."))
@@ -312,6 +317,9 @@ voltage(d::ExperimentData)              = voltage(d.condition)
 
 thickness(d::ExperimentData)            = thickness(d.geometry)
 electric_field(d::ExperimentData)       = electric_field(d.condition, d.geometry)
+
+npoints(d::ExperimentData)              = npoints(d.protocol)
+npoints(s::AbstractVector{<:ExperimentData}) = sum(npoints, s)
 
 
 # --- Experiment labels ---
