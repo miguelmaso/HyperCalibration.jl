@@ -9,11 +9,11 @@ using LinearAlgebra, Statistics
 A struct that holds the results of a calibration process.
 """
 struct CalibrationResult{B, P, D}
-    builder::B
-    params::P
-    data::D
-    model::PhysicalModel
-    CalibrationResult(builder::B, params::P, data::D) where {B,P,D} = new{B,P,D}(builder, params, data, builder(params...))
+  builder::B
+  params::P
+  data::D
+  model::PhysicalModel
+  CalibrationResult(builder::B, params::P, data::D) where {B,P,D} = new{B,P,D}(builder, params, data, builder(params...))
 end
 
 """
@@ -24,74 +24,95 @@ standard errors, confidence intervals and normalized sensitivity
 for the calibrated parameters.
 """
 struct ParameterStats{P, E, C, S}
-    names::Vector{String}
-    params::P
-    std_errs::E
-    ci_bounds::C       # Matrix/Tuple of (lower, upper)
-    sensitivities::S
-    r2::Float64
+  names::Vector{String}
+  params::P
+  std_errs::E
+  ci_bounds::C       # Matrix/Tuple of (lower, upper)
+  sensitivities::S
+  r2::Float64
 end
 
 
 # --- Residuals & Jacobian Engine ---
 
 function residuals(model::PhysicalModel, data)
-    y_true, y_pred = experiment_prediction(model, data)
-    return y_true .- y_pred
+  y_true, y_pred = experiment_prediction(model, data)
+  return y_true .- y_pred
 end
 
 function finite_difference_jacobian(model_builder, params, data; h_rel=1e-5)
-    r0 = residuals(model_builder(params...), data)
-    n_res = length(r0)
-    n_params = length(params)
-    J = Matrix{Float64}(undef, n_res, n_params)
+  r0 = residuals(model_builder(params...), data)
+  n_res = length(r0)
+  n_params = length(params)
+  J = Matrix{Float64}(undef, n_res, n_params)
+  
+  p_step = copy(params)
+  for j in 1:n_params
+    h = h_rel * abs(params[j])
     
-    p_step = copy(params)
-    for j in 1:n_params
-        h = h_rel * max(abs(params[j]), 1.0)
-        
-        p_step[j] = params[j] + h
-        r_plus = residuals(model_builder(p_step...), data)
-        
-        p_step[j] = params[j] - h
-        r_minus = residuals(model_builder(p_step...), data)
-        
-        p_step[j] = params[j] # reset
-        @. J[:, j] = (r_plus - r_minus) / (2 * h)
-    end
-    return J
+    p_step[j] = params[j] + h
+    r_plus = residuals(model_builder(p_step...), data)
+    
+    p_step[j] = params[j] - h
+    r_minus = residuals(model_builder(p_step...), data)
+    
+    p_step[j] = params[j] # reset
+    @. J[:, j] = (r_plus - r_minus) / (2 * h)
+  end
+  return J
 end
 
 
 # --- Covariance Matrix via SVD ---
 
 """
-    covariance_matrix(calibration_result)
+    covariance_matrix(calibration_result) -> (cov_mat, JtJ, sse)
 
-Compute the covariance matrix from a [`CalibrationResult`](@ref) via
-the Jacobian of the residual ``J_{ij} = \\frac{\\partial r_i}{\\partial p_j}`` evaluated with central differences.
+Compute the cluster-robust (sandwich) covariance matrix from a [`CalibrationResult`](@ref).
+
+Evaluates the residual Jacobian ``J_{ij} = \\frac{\\partial r_i}{\\partial p_j}`` using central
+differences and aggregates residuals by experimental curve ``k \\in \\{1, \\dots, M\\}`` to account
+for intra-curve autocorrelation:
+
+```math
+\\Sigma = c \\cdot (J^T J)^{-1} \\left( \\sum_{k=1}^{M} J_k^T r_k r_k^T J_k \\right) (J^T J)^{-1}
+```
 """
 function covariance_matrix(res::CalibrationResult)
-    J = finite_difference_jacobian(res.builder, res.params, res.data)
-    r = residuals(res.model, res.data)
+
+  M = length(res.data)
+  n_params = length(res.params)
+
+  # Accumulators for para el (J'J) and (Jk'rk)(Jk'rk)'
+  JtJ = zeros(Float64, n_params, n_params)
+  term = zeros(Float64, n_params, n_params)
+  sse = 0.0
+
+  for exp_k in res.data
+    r_k = residuals(res.model, exp_k)
+    J_k = finite_difference_jacobian(res.builder, res.params, exp_k)
     
-    n_data = length(r)
-    n_params = length(res.params)
-    n_dof = max(1, n_data - n_params)
+    sse += sum(abs2, r_k)
+    JtJ .+= J_k' * J_k
     
-    sse = sum(abs2, r)
-    res_var = sse / n_dof
-    
-    # Stable pseudoinverse of J'J using SVD of J directly
-    # J = U * S * V' => (J'J)^+ = V * S^-2 * V'
-    F = svd(J)
-    tol = maximum(F.S) * max(n_data, n_params) * eps(Float64)
-    inv_S2 = [s > tol ? 1.0 / (s^2) : 0.0 for s in F.S]
-    
-    cov_mat = res_var .* (F.V * Diagonal(inv_S2) * F.V')
-    JtJ = J' * J
-    
-    return Symmetric(cov_mat), JtJ, sse
+    # Constributions of gradients to curve k
+    g_k = J_k' * r_k
+    term .+= g_k * g_k'
+  end
+
+  # Correction factor for small samples with M clusters
+  c = M > 1 ? M / (M - 1) : 1.0
+
+  # Stable pseudoinverse of J'J using SVD of J directly
+  F = svd(JtJ)
+  tol = maximum(F.S) * eps(Float64)
+  inv_S = [s > tol ? 1.0 / s : 0.0 for s in F.S]
+  inv_JtJ = F.V * Diagonal(inv_S) * F.V'
+
+  # Sandwich formula: Σ = c * (J'J)⁻¹ * (∑ J_k' r_k r_k' J_k) * (J'J)⁻¹
+  cov_mat = c .* (inv_JtJ * term * inv_JtJ)
+
+  return Symmetric(cov_mat), JtJ, sse
 end
 
 
@@ -104,10 +125,10 @@ end
 Calculate the R² score for the model predictions against the experimental data.
 """
 function r2_score(model::PhysicalModel, data)
-    y_true, y_pred = experiment_prediction(model, data)
-    ss_res = sum(abs2, y_true .- y_pred)
-    ss_tot = sum(abs2, y_true .- mean(y_true))
-    return 1.0 - (ss_res / ss_tot)
+  y_true, y_pred = experiment_prediction(model, data)
+  ss_res = sum(abs2, y_true .- y_pred)
+  ss_tot = sum(abs2, y_true .- mean(y_true))
+  return 1.0 - (ss_res / ss_tot)
 end
 
 r2_score(res::CalibrationResult) = r2_score(res.model, res.data)
@@ -162,19 +183,19 @@ function Base.show(io::IO, ::MIME"text/plain", stats::ParameterStats)
 end
 
 function Base.show(io::IO, ::MIME"text/latex", stats::ParameterStats)
-    println(io, "Model Calibration Summary (\$R^2 = $(round(stats.r2, digits=4))\$) \\\\")
-    println(io, "\\begin{tabular}{l c r r}")
-    println(io, "\\hline")
-    println(io, "Param & Estimate \$\\pm\$ Margin & Rel. Err (\\%) & Sensitivity \\\\")
-    println(io, "\\hline")
-    for i in eachindex(stats.params)
-        abs_e = stats.params[i] - stats.ci_bounds[i][1]
-        rel_e = abs(abs_e / stats.params[i]) * 100
-        @printf(io, "\$%-8s\$ & \$%8.3g \\pm %-7.2g\$ & %12.1f & %10.1f \\\\\n", 
-                stats.names[i], stats.params[i], abs_e, rel_e, stats.sensitivities[i])
-    end
-    println(io, "\\hline")
-    println(io, "\\end{tabular}")
+  println(io, "Model Calibration Summary (\$R^2 = $(round(stats.r2, digits=4))\$) \\\\")
+  println(io, "\\begin{tabular}{l c r r}")
+  println(io, "\\hline")
+  println(io, "Param & Estimate \$\\pm\$ Margin & Rel. Err (\\%) & Sensitivity \\\\")
+  println(io, "\\hline")
+  for i in eachindex(stats.params)
+    abs_e = stats.params[i] - stats.ci_bounds[i][1]
+    rel_e = abs(abs_e / stats.params[i]) * 100
+    @printf(io, "\$%-8s\$ & \$%8.3g \\pm %-7.2g\$ & %12.1f & %10.1f \\\\\n", 
+            stats.names[i], stats.params[i], abs_e, rel_e, stats.sensitivities[i])
+  end
+  println(io, "\\hline")
+  println(io, "\\end{tabular}")
 end
 
 """
@@ -205,7 +226,7 @@ function sample_parameters(res::CalibrationResult, n_samples::Int=100)
   # Eigen-decomposition for stable Gaussian sampling: X = μ + V * √Δ * Z
   E = eigen(Symmetric(cov_mat))
   vals_clean = max.(E.values, 0.0) # Enforce positive semi-definiteness
-  transform = E.vectors * Diagonal(sqrt.(vals_clean))
+  transform = E.vectors * Diagonal(sqrt.(vals_clean)) * inv(E.vectors)
   
   n_params = length(res.params)
   samples = Matrix{Float64}(undef, n_params, n_samples)
