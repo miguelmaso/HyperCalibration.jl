@@ -1,7 +1,7 @@
 
 ## ExperimentsData
 
-Data structures for defining an experimental test: the measurement, the
+Data structures for defining an experimental test: the **measurement**, the
 loading/environmental **protocol**, the ambient **conditions**, and the
 specimen **geometry**. These four pieces are combined into an
 [`ExperimentData`](@ref) instance, which is the unit consumed by

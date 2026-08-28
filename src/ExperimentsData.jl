@@ -31,11 +31,15 @@ allowing to compute the deformation gradient at one Gauss point.
 abstract type Kinematics end
 
 """
+    Uniaxial <: Kinematics
+
 Uniaxial kinematics allow to evaluate the stress response at one Gauss point.
 """
 struct Uniaxial <: Kinematics end
 
 """
+    Biaxial <: Kinematics
+
 Biaxial kinematics allow to evaluate the stress response at one Gauss point.
 """
 struct Biaxial <: Kinematics end
@@ -44,6 +48,8 @@ struct Biaxial <: Kinematics end
 # --- Measurements ---
 
 """
+    TensileMeasurement <: AbstractMeasurement
+
 The nominal stress recoded during a tensile test.
 """
 struct TensileMeasurement <: AbstractMeasurement
@@ -52,6 +58,8 @@ struct TensileMeasurement <: AbstractMeasurement
 end
 
 """
+    ThermalMeasurement <: AbstractMeasurement
+
 The specific heat capacity recoded during a thermal test.
 """
 struct ThermalMeasurement <: AbstractMeasurement
@@ -60,6 +68,8 @@ struct ThermalMeasurement <: AbstractMeasurement
 end
 
 """
+    DielectricMeasurement <: AbstractMeasurement
+
 The dielectric parmittivity recoded during a dielectric test.
 """
 struct DielectricMeasurement <: AbstractMeasurement
@@ -70,17 +80,28 @@ end
 
 # --- Protocols ---
 
+"""
+    MechanicalProtocol{K<:Kinematics} <: AbstractProtocol
+
+Abstract type for the mechanical protocols, allowing to combine a [`Kinematics`](@ref)
+with different descriptions, e.g., constant stretch, quasistatic stretch or a generic protocol.
+"""
 abstract type MechanicalProtocol{K<:Kinematics} <: AbstractProtocol end
 
 """
+    SequentialProtocol{K<:Kinematics} <: MechanicalProtocol{K}
+
 A sequential protocol defines a series of sub-protocols to be executed in order.
-E.g. a relaxation test is defined by a fast loading stage (CyclicLoadingProtocol) followed by a long holding stage (CreepProtocol).
+E.g. a relaxation test is defined by a fast loading stage [`CyclicLoadingProtocol`](@ref)
+followed by a long holding stage [`CreepProtocol`](@ref).
 """
 struct SequentialProtocol{K<:Kinematics} <: MechanicalProtocol{K}
   stages::Vector{MechanicalProtocol{K}}
 end
 
 """
+    QuasiStaticProtocol{K<:Kinematics} <: MechanicalProtocol{K}
+
 A sequence of stretches.
 """
 struct QuasiStaticProtocol{K<:Kinematics} <: MechanicalProtocol{K}
@@ -89,6 +110,8 @@ struct QuasiStaticProtocol{K<:Kinematics} <: MechanicalProtocol{K}
 end
 
 """
+    CyclicLoadingProtocol{K<:Kinematics} <: MechanicalProtocol{K}
+
 A sequence of stretches at a constant rate and time step.
 """
 struct CyclicLoadingProtocol{K<:Kinematics} <: MechanicalProtocol{K}
@@ -99,6 +122,8 @@ struct CyclicLoadingProtocol{K<:Kinematics} <: MechanicalProtocol{K}
 end
 
 """
+    CreepProtocol{K<:Kinematics} <: MechanicalProtocol{K}
+
 A sequence of times at a constant stretch.
 """
 struct CreepProtocol{K<:Kinematics} <: MechanicalProtocol{K}
@@ -108,6 +133,8 @@ struct CreepProtocol{K<:Kinematics} <: MechanicalProtocol{K}
 end
 
 """
+    TemperatureSweepProtocol <: AbstractProtocol
+
 A sequence of temperatures at constant rate.
 """
 struct TemperatureSweepProtocol <: AbstractProtocol
@@ -117,6 +144,8 @@ struct TemperatureSweepProtocol <: AbstractProtocol
 end
 
 """
+    FrequencySweepProtocol <: AbstractProtocol
+
 A sequence of frequencies.
 """
 struct FrequencySweepProtocol <: AbstractProtocol
@@ -194,12 +223,16 @@ max_stretch(p::MechanicalProtocol) = maximum(stretches(p))
 # --- Conditions ---
 
 """
+    StandardCondition <: AbstractCondition
+
 A standard condition with no additional parameters.
 """
 struct StandardCondition <: AbstractCondition
 end
 
 """
+    IsothermalCondition <: AbstractCondition
+
 An experiment at a constant temperature.
 """
 struct IsothermalCondition <: AbstractCondition
@@ -208,6 +241,8 @@ struct IsothermalCondition <: AbstractCondition
 end
 
 """
+    ElectricalCondition <: AbstractCondition
+
 An experiment at a constant voltage.
 """
 struct ElectricalCondition <: AbstractCondition
@@ -216,6 +251,8 @@ struct ElectricalCondition <: AbstractCondition
 end
 
 """
+    ThermoElectricalCondition <: AbstractCondition
+
 An experiment at a constant temperature and voltage.
 """
 struct ThermoElectricalCondition <: AbstractCondition
@@ -246,6 +283,8 @@ voltage(c::ThermoElectricalCondition) = c.V
 # --- Geometries ---
 
 """
+    PlateGeometry <: AbstractGeometry
+
 A specimen geometry with a reference thickness and cross-sectional area.
 """
 struct PlateGeometry <: AbstractGeometry
