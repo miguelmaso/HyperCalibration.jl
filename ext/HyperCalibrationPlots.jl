@@ -62,10 +62,16 @@ end
 
 
 @recipe function f(models::AbstractVector{<:PhysicalModel}, data::ExperimentData)
+  
+  scale = pop!(plotattributes, :units_scale, 1.0)
+
+  x_data = independent_variable(data)
 
   for model in models
+    _, y_pred = experiment_prediction(model, data) .* scale
+    
     @series begin
-      model, data  # Re-routes each item back to the single-experiment recipe
+      x_data, y_pred
     end
   end
 end
