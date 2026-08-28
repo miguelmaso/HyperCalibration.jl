@@ -173,7 +173,7 @@ function Base.show(io::IO, ::MIME"text/plain", stats::ParameterStats)
   println(io, "Model Calibration Summary (R² = $(round(stats.r2, digits=4))):")
   println(io, "--------------------------------------------------------")
   @printf(io, "%-8s | %-18s | %-12s | %-10s\n", "Param", "Estimate ± Margin", "Rel. Err (%)", "Sensitivity")
-  println(io, "--------------------------------------------------------")
+  println(io, "---------|--------------------|--------------|----------")
   for i in eachindex(stats.params)
     abs_e = stats.params[i] - stats.ci_bounds[i][1]
     rel_e = abs(abs_e / stats.params[i]) * 100
