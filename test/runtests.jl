@@ -12,4 +12,6 @@ using HyperFEM
   include("test_experiments_data.jl")
   include("test_constitutive_modelling.jl")
   include("test_objective_functions.jl")
+  include("test_diagnostics.jl")
+
 end
