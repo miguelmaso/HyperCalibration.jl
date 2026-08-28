@@ -60,4 +60,14 @@ end
   end
 end
 
+
+@recipe function f(models::AbstractVector{<:PhysicalModel}, data::ExperimentData)
+
+  for model in models
+    @series begin
+      model, data  # Re-routes each item back to the single-experiment recipe
+    end
+  end
+end
+
 end
