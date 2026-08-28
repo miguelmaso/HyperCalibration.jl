@@ -58,5 +58,3 @@ export covariance_matrix
 export r2_score
 export parameter_stats
 export sample_parameters
-export latex_string
-export latex_print
