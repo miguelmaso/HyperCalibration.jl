@@ -1,6 +1,4 @@
 
-using LinearAlgebra, Statistics
-
 # --- Storage & Wrapper Structs ---
 
 """
@@ -150,8 +148,9 @@ Calculate the R² score for the model predictions against the experimental data.
 """
 function r2_score(model::PhysicalModel, data)
   y_true, y_pred = experiment_prediction(model, data)
+  y_mean = sum(y_true) / length(y_true)
   ss_res = sum(abs2, y_true .- y_pred)
-  ss_tot = sum(abs2, y_true .- mean(y_true))
+  ss_tot = sum(abs2, y_true .- y_mean)
   return 1.0 - (ss_res / ss_tot)
 end
 
