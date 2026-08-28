@@ -1,6 +1,7 @@
 module HyperCalibration
 
 using HyperFEM
+using LinearAlgebra
 using Printf
 
 include("ExperimentsData.jl")
