@@ -22,6 +22,19 @@ end
 A struct returned by [`parameter_stats`](@ref), gathering the
 standard errors, confidence intervals and normalized sensitivity
 for the calibrated parameters.
+
+The structure implements both MIME `"text/plain"` and `"text/latex"`,
+supporting *Markdown* and ``\\LaTeX`` rendering or copy/pasting into a document.
+
+```julia
+# REPL / Terminal:
+show(stdout, MIME("text/latex"), stats)
+```
+
+```julia
+# Rich environments (VS Code / Jupyter):
+display(MIME("text/latex"), stats)
+```
 """
 struct ParameterStats{P, E, C, S}
   names::Vector{String}
@@ -173,7 +186,7 @@ function Base.show(io::IO, ::MIME"text/plain", stats::ParameterStats)
   println(io, "Model Calibration Summary (R² = $(round(stats.r2, digits=4))):")
   println(io, "--------------------------------------------------------")
   @printf(io, "%-8s | %-18s | %-12s | %-10s\n", "Param", "Estimate ± Margin", "Rel. Err (%)", "Sensitivity")
-  println(io, "--------------------------------------------------------")
+  println(io, "---------|--------------------|--------------|----------")
   for i in eachindex(stats.params)
     abs_e = stats.params[i] - stats.ci_bounds[i][1]
     rel_e = abs(abs_e / stats.params[i]) * 100
@@ -197,20 +210,6 @@ function Base.show(io::IO, ::MIME"text/latex", stats::ParameterStats)
   println(io, "\\hline")
   println(io, "\\end{tabular}")
 end
-
-"""
-    latex_string(param_stats)
-
-Generate a string representing a summary with the [`ParameterStats`](@ref) to be copy-pasted into a ``\\LaTeX`` document.
-"""
-latex_string(x) = sprint(show, MIME("text/latex"), x)
-
-"""
-    latex_print(param_stats)
-
-Print a string representing a summary with the [`ParameterStats`](@ref) to be copy-pasted into a ``\\LaTeX`` document.
-"""
-latex_print(x) = print(latex_string(x))
 
 
 # --- Uncertainty Ensemble Generation ---
