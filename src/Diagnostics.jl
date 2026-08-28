@@ -7,6 +7,17 @@ using LinearAlgebra, Statistics
     CalibrationResult
 
 A struct that holds the results of a calibration process.
+
+# Fields
+- `builder`: the function to build the constitutive model `(params...) -> model`
+- `params` : the vector of optimal parameters
+- `data` : the dataset used to find the optimal parameters
+- `model` : the constitutive model
+
+# Example
+```julia
+result = CalibrationResult(builder, Optim.minimizer(opt_result), data)
+```
 """
 struct CalibrationResult{B, P, D}
   builder::B
@@ -218,7 +229,9 @@ latex_print(x) = print(latex_string(x))
 """
     sample_parameters(res::CalibrationResult, n_samples=100)
 
-Generates *n* parameter samples according to a normal multivariate distribution `N(params, Cov)`.
+Generates *n* parameter samples following a normal multivariate distribution `N(params, Cov)`,
+with average parameters according to the optimal result, and standard distribution according to the
+data gathered in the [`CalibrationResult`](@ref)
 """
 function sample_parameters(res::CalibrationResult, n_samples::Int=100)
   cov_mat, _, _ = covariance_matrix(res)
