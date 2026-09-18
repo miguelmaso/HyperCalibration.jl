@@ -20,7 +20,7 @@ ExperimentsCSVExt = "CSV"
 HyperCalibrationPlots = "Plots"
 
 [compat]
-CSV = "0.10"
+CSV = "0.10, 1.0"
 HyperFEM = "0.0.6"
 LinearAlgebra = "1.12"
 Plots = "1"
