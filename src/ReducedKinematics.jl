@@ -66,9 +66,9 @@ state, including any thermally-induced volumetric contribution computed via
 
 - `calculate_F(model, θ)` returns the purely volumetric `F` at temperature `θ`
 - `calculate_F(model, ::Type{Uniaxial}, λ, condition)` returns `F` for a
-  [Uniaxial](@ref) stretch `λ` and possibly thermal `condition`.
+  [`Uniaxial`](@ref) stretch `λ` and possibly thermal `condition`.
 - `calculate_F(model, ::Type{Biaxial}, λ, condition)` returns `F` for a
-  [Biaxial](@ref) stretch `λ` and possibly thermal `condition`.
+  [`Biaxial`](@ref) stretch `λ` and possibly thermal `condition`.
 - `calculate_F(model, λ1, λ2, condition)` returns `F` for an independently
   biaxial state with stretches `λ1` and `λ2` under the given `condition`. 
 """
