@@ -363,13 +363,24 @@ npoints(s::AbstractVector{<:ExperimentData}) = sum(npoints, s)
 
 # --- Experiment labels ---
 
-pretty_label(f::Function)               = d -> pretty_label(f, d)
+"""
+    pretty_label(experiment_getter, experiment)
+
+Get a formatted string that reppresents an experiment's property.
+"""
 pretty_label(f::Function, d)            = string(f(d))
 pretty_label(f::typeof(rate), d)        = @sprintf("%.2f ", f(d)) * rate_units(d)
 pretty_label(f::typeof(max_stretch), d) = @sprintf("%3.0f %%", round(100*(f(d)-1), digits=-1))
 pretty_label(f::typeof(temperature), d) = @sprintf("%2.0f ºC", f(d)-273.15)
 pretty_label(f::typeof(voltage), d)     = @sprintf("%4d V", f(d))
 pretty_label(fs::Tuple{Vararg{Function}}, d) = join(map(f -> pretty_label(f, d), fs), ", ")
+
+"""
+    pretty_labels(experiment_getter, experiments)
+
+Get formatted strings reppresenting the propoert of several experiments.
+"""
+pretty_labels(f::Function, ds::AbstractVector{<:ExperimentData}) = map(d -> pretty_label(f,d), ds)
 
 rate_units(d::ExperimentData) = rate_units(d.protocol)
 rate_units(::TemperatureSweepProtocol) = "K/min"

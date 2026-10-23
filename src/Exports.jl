@@ -34,6 +34,7 @@ export MechanicalTest
 export ThermalTest
 export ThermoDielectricTest
 export pretty_label
+export pretty_labels
 
 export UniaxialQuasiStaticTest
 export UniaxialCyclicLoadingTest
