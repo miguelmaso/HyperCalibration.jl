@@ -64,3 +64,6 @@ plot(model, experiments[1], xlabel="Stretch [-]", ylabel="Stress [KPa]", units_s
   as vectors (one entry per experiment) to control each series individually.
 - `units_scale` rescales both predicted and measured values before plotting
   (e.g. `1e-3` to display stress in kPa instead of Pa).
+- `marker_stride` thins the measured data markers only (not the prediction
+  line) to every `marker_stride`-th point (i.e. `[1:marker_stride:end]`);
+  defaults to `1` (no thinning).

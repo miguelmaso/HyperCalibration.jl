@@ -36,6 +36,7 @@ end
 @recipe function f(model::PhysicalModel, data::ExperimentData)
 
   scale = pop!(plotattributes, :units_scale, 1.0)
+  marker_stride = pop!(plotattributes, :marker_stride, 1)
 
   x_data = independent_variable(data)
   y_true, y_pred = experiment_prediction(model, data) .* scale
@@ -43,7 +44,7 @@ end
   user_label = get(plotattributes, :label, nothing)
   user_color = get(plotattributes, :seriescolor, nothing)
 
-  split_series = (user_label isa AbstractArray && length(user_label) > 1) || 
+  split_series = (user_label isa AbstractArray && length(user_label) > 1) ||
                  (user_color isa AbstractArray && length(user_color) > 1)
 
   # 1. Prediction line
@@ -56,7 +57,7 @@ end
   @series begin
     seriestype := :scatter
     primary    := split_series
-    x_data, y_true
+    x_data[1:marker_stride:end], y_true[1:marker_stride:end]
   end
 end
 
