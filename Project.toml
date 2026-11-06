@@ -21,7 +21,7 @@ HyperCalibrationPlots = "Plots"
 
 [compat]
 CSV = "0.10, 1.0"
-HyperFEM = "0.0.6"
+HyperFEM = "0.0.6, 0.1"
 LinearAlgebra = "1.12"
 Plots = "1"
 Printf = "1"
